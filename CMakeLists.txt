@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
+
 SET(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_VERSION 1)
 SET(CMAKE_C_COMPILER_WORKS 1)
@@ -7,13 +8,15 @@ SET(CMAKE_CXX_COMPILER_WORKS 1)
 project(artronics)
 
 enable_language(CXX C ASM)
+add_subdirectory(tests)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/arm-none-eabi-gcc.cmake)
+#set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/arm-none-eabi-gcc.cmake)
+message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}.")
 
 add_subdirectory(drivers)
 
