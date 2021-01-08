@@ -1,8 +1,7 @@
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
-TEST (SquareRootTest, PositiveNos) {
-  EXPECT_EQ (0, 0);
-}
+using namespace testing;
 
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);

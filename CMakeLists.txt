@@ -1,16 +1,26 @@
 cmake_minimum_required(VERSION 3.17)
 
-SET(CMAKE_SYSTEM_NAME Generic)
-SET(CMAKE_SYSTEM_VERSION 1)
-SET(CMAKE_C_COMPILER_WORKS 1)
-SET(CMAKE_CXX_COMPILER_WORKS 1)
-
 project(artronics)
 
+#SET(CMAKE_SYSTEM_NAME Generic)
+#SET(CMAKE_SYSTEM_VERSION 1)
+SET(CMAKE_C_COMPILER_WORKS 1)
+SET(CMAKE_CXX_COMPILER_WORKS 1)
+set(CMAKE_CXX_STANDARD 11)
+
+
 enable_language(CXX C ASM)
+
+include_directories(
+        inc
+        drivers/CMSIS/Include
+        drivers/CMSIS/Device/ST/STM32F0xx/Include
+        drivers/STM32F0xx_HAL_Driver/Inc
+)
+
 add_subdirectory(tests)
 
-set(CMAKE_CXX_STANDARD 11)
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -35,18 +45,12 @@ SET(SOURCES
 set(EXECUTABLE ${PROJECT_NAME}.out)
 add_executable(${EXECUTABLE} ${SOURCES})
 
-
 target_compile_definitions(${EXECUTABLE} PRIVATE
         -DUSE_HAL_DRIVER
         -DSTM32F042x6
+        -DDBGMCU_APB1_FZ_DBG_CAN_STOP
         )
 
-target_include_directories(${EXECUTABLE} PRIVATE
-        inc
-        drivers/CMSIS/Include
-        drivers/CMSIS/Device/ST/STM32F0xx/Include
-        drivers/STM32F0xx_HAL_Driver/Inc
-        )
 
 target_compile_options(${EXECUTABLE} PRIVATE
         -mcpu=cortex-m0
@@ -56,7 +60,7 @@ target_compile_options(${EXECUTABLE} PRIVATE
         -ffunction-sections
 
         -Wall
-
+        -Og
         $<$<CONFIG:Debug>:-Og>
         )
 
@@ -81,3 +85,10 @@ add_custom_command(TARGET ${EXECUTABLE}
         COMMAND arm-none-eabi-objcopy -O ihex ${EXECUTABLE} ${PROJECT_NAME}.hex
         COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE} ${PROJECT_NAME}.bin)
 
+add_executable(all_tests ${TEST_SOURCES})
+target_compile_definitions(all_tests PRIVATE
+        -DUSE_HAL_DRIVER
+        -DSTM32F042x6
+        )
+target_link_libraries(all_tests gmock_main gtest_main )
+add_test(NAME all_tests COMMAND all_tests)
