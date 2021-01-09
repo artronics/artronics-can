@@ -49,6 +49,7 @@ target_compile_definitions(${EXECUTABLE} PRIVATE
         -DUSE_HAL_DRIVER
         -DSTM32F042x6
         -DDBGMCU_APB1_FZ_DBG_CAN_STOP
+        -DUSE_HAL_CAN_REGISTER_CALLBACKS=1
         )
 
 

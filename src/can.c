@@ -1,3 +1,4 @@
+#define USE_HAL_CAN_REGISTER_CALLBACKS 1
 #include "can.h"
 #include "stm32f0xx_hal_can.h"
 #include "stm32f042x6.h"
@@ -5,7 +6,7 @@
 HAL_StatusTypeDef init_filter(void);
 HAL_StatusTypeDef init_filter_module_id(void);
 
-static CAN_HandleTypeDef hCan;
+CAN_HandleTypeDef hCan;
 
 HAL_StatusTypeDef CAN_Init(void) {
   HAL_CAN_Init(&hCan);
@@ -14,11 +15,12 @@ HAL_StatusTypeDef CAN_Init(void) {
 void CAN_initGpio(void);
 
 HAL_StatusTypeDef  init_can(void) {
-
   CAN_initGpio();
 
+  HAL_NVIC_SetPriority(CEC_CAN_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(CEC_CAN_IRQn);
+
   hCan.Instance = CAN;
-//  hCan.State = HAL_CAN_STATE_RESET;
   hCan.Init.Prescaler = 12;
   hCan.Init.Mode = CAN_MODE_NORMAL;
   hCan.Init.SyncJumpWidth = CAN_SJW_1TQ;
@@ -36,9 +38,23 @@ HAL_StatusTypeDef  init_can(void) {
   if (status != HAL_OK) {
     return status;
   }
-  CAN->MCR = CAN->MCR && (~0x0100);
-  __HAL_UNFREEZE_CAN_DBGMCU();
-  return init_filter();
+//  CAN->MCR = CAN->MCR && (~0x0100);
+//  __HAL_UNFREEZE_CAN_DBGMCU();
+
+  status = init_filter();
+
+  if (status != HAL_OK) {
+    return status;
+  }
+
+  HAL_CAN_RegisterCallback(&hCan, HAL_CAN_RX_FIFO0_MSG_PENDING_CB_ID, HAL_CAN_RxFifo0MsgPendingCallback);
+  status = HAL_CAN_ActivateNotification(&hCan, CAN_IT_RX_FIFO0_MSG_PENDING); //enable interrupts
+  if (status != HAL_OK) {
+    return status;
+  }
+
+
+  return HAL_CAN_Start(&hCan); //start CAN
 }
 
 void CAN_initGpio(void) {
@@ -65,22 +81,7 @@ HAL_StatusTypeDef init_filter(void) {
   sFilterConfig.FilterActivation = ENABLE;
   sFilterConfig.FilterBank = 0;
 
-  HAL_StatusTypeDef status;
-  status = HAL_CAN_ConfigFilter(&hCan, &sFilterConfig);
-  if (status != HAL_OK) {
-    return status;
-  }
-//  status = init_filter_module_id();
-//  if (status != HAL_OK) {
-//    return status;
-//  }
-
-  status = HAL_CAN_Start(&hCan); //start CAN
-  if (status != HAL_OK) {
-    return status;
-  }
-
-  return HAL_CAN_ActivateNotification(&hCan, CAN_IT_RX_FIFO0_MSG_PENDING); //enable interrupts
+  return HAL_CAN_ConfigFilter(&hCan, &sFilterConfig);
 }
 
 HAL_StatusTypeDef init_filter_module_id(void) {
@@ -113,6 +114,15 @@ void send_can_data(CAN_TxHeaderTypeDef *pTxHeader, uint8_t *data) {
 
 }
 
-//void HAL_CAN_IRQHandler(CAN_HandleTypeDef *hcan) {
-//  __ASM("nop");
-//}
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+  UNUSED(hcan);
+  __ASM("nop");
+}
+
+// The callback function doesn't get called because for some reason HAL doesn't have a handler
+// Calling it manually
+void CEC_CAN_IRQHandler(void) {
+  __ASM("nop");
+  HAL_CAN_IRQHandler(&hCan);
+}
