@@ -31,5 +31,6 @@ endif()
 set(TEST_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/test_main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/test_can.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_ring_buffer.cpp
         PARENT_SCOPE
         )

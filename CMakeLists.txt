@@ -13,6 +13,7 @@ enable_language(CXX C ASM)
 
 include_directories(
         inc
+        lib/inc
         drivers/CMSIS/Include
         drivers/CMSIS/Device/ST/STM32F0xx/Include
         drivers/STM32F0xx_HAL_Driver/Inc
@@ -29,6 +30,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}.")
 
 add_subdirectory(drivers)
+add_subdirectory(lib)
 
 SET(SOURCES
         ${HAL_SOURCES}
@@ -91,5 +93,5 @@ target_compile_definitions(all_tests PRIVATE
         -DUSE_HAL_DRIVER
         -DSTM32F042x6
         )
-target_link_libraries(all_tests gmock_main gtest_main )
+target_link_libraries(all_tests gmock_main gtest_main ring_buffer)
 add_test(NAME all_tests COMMAND all_tests)
