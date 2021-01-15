@@ -2,29 +2,29 @@
 #include "ring_buffer.h"
 
 struct ring_buffer {
-    size_t s_elem;
-    size_t n_elem;
-    uint32_t *buf;
+    size_t size_elem;
+    size_t num_elem;
+    uint8_t *buf;
     volatile size_t head;
     volatile size_t tail;
 };
 
-static struct ring_buffer _rb[RING_BUFFER_MAX];
+static struct ring_buffer rb[RING_BUFFER_MAX];
 
-uint32_t RingBuffer_Init(rbd_t *rbd, rb_attr_t *attr) {
-  static uint32_t idx = 0;
-  uint32_t err = -1;
+int RingBuffer_Init(rbd_t *rbd, rb_attr_t *attr) {
+  static int idx = 0;
+  int err = -1;
 
   if ((idx < RING_BUFFER_MAX) && (rbd != NULL) && (attr != NULL)) {
-    if ((attr->buffer != NULL) && (attr->s_elem > 0)) {
+    if ((attr->buffer != NULL) && (attr->size_elem > 0)) {
       /* Check that the size of the ring buffer is a power of 2 */
-      if (((attr->n_elem - 1) & attr->n_elem) == 0) {
+      if (((attr->num_elem - 1) & attr->num_elem) == 0) {
         /* Initialize the ring buffer internal variables */
-        _rb[idx].head = 0;
-        _rb[idx].tail = 0;
-        _rb[idx].buf = attr->buffer;
-        _rb[idx].s_elem = attr->s_elem;
-        _rb[idx].n_elem = attr->n_elem;
+        rb[idx].head = 0;
+        rb[idx].tail = 0;
+        rb[idx].buf = attr->buffer;
+        rb[idx].size_elem = attr->size_elem;
+        rb[idx].num_elem = attr->num_elem;
 
         *rbd = idx++;
         err = 0;
@@ -35,21 +35,21 @@ uint32_t RingBuffer_Init(rbd_t *rbd, rb_attr_t *attr) {
   return err;
 }
 
-static int _ring_buffer_full(struct ring_buffer *rb) {
-  return ((rb->head - rb->tail) == rb->n_elem) ? 1 : 0;
+static int RingBuffer_full(struct ring_buffer *rb) {
+  return ((rb->head - rb->tail) == rb->num_elem) ? 1 : 0;
 }
 
-static int _ring_buffer_empty(struct ring_buffer *rb) {
+static int RingBuffer_empty(struct ring_buffer *rb) {
   return ((rb->head - rb->tail) == 0U) ? 1 : 0;
 }
 
-int ring_buffer_put(rbd_t rbd, const void *data) {
+int RingBuffer_Put(rbd_t rbd, const void *data) {
   int err = 0;
 
-  if ((rbd < RING_BUFFER_MAX) && (_ring_buffer_full(&_rb[rbd]) == 0)) {
-    const size_t offset = (_rb[rbd].head & (_rb[rbd].n_elem - 1)) * _rb[rbd].s_elem;
-    memcpy(&(_rb[rbd].buf[offset]), data, _rb[rbd].s_elem);
-    _rb[rbd].head++;
+  if ((rbd < RING_BUFFER_MAX) && (RingBuffer_full(&rb[rbd]) == 0)) {
+    const size_t offset = (rb[rbd].head & (rb[rbd].num_elem - 1)) * rb[rbd].size_elem;
+    memcpy(&(rb[rbd].buf[offset]), data, rb[rbd].size_elem);
+    rb[rbd].head++;
   } else {
     err = -1;
   }
@@ -57,14 +57,14 @@ int ring_buffer_put(rbd_t rbd, const void *data) {
   return err;
 }
 
-int ring_buffer_get(rbd_t rbd, void *data)
+int RingBuffer_Get(rbd_t rbd, void *data)
 {
   int err = 0;
 
-  if ((rbd < RING_BUFFER_MAX) && (_ring_buffer_empty(&_rb[rbd]) == 0)) {
-    const size_t offset = (_rb[rbd].tail & (_rb[rbd].n_elem - 1)) * _rb[rbd].s_elem;
-    memcpy(data, &(_rb[rbd].buf[offset]), _rb[rbd].s_elem);
-    _rb[rbd].tail++;
+  if ((rbd < RING_BUFFER_MAX) && (RingBuffer_empty(&rb[rbd]) == 0)) {
+    const size_t offset = (rb[rbd].tail & (rb[rbd].num_elem - 1)) * rb[rbd].size_elem;
+    memcpy(data, &(rb[rbd].buf[offset]), rb[rbd].size_elem);
+    rb[rbd].tail++;
   } else {
     err = -1;
   }

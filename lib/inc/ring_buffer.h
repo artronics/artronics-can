@@ -11,14 +11,16 @@ extern "C" {
 #define RING_BUFFER_MAX 1
 
 typedef struct {
-    size_t s_elem;
-    size_t n_elem;
+    size_t size_elem;
+    size_t num_elem;
     void *buffer;
 } rb_attr_t;
 
-typedef uint32_t rbd_t;
+typedef unsigned int rbd_t;
 
-uint32_t RingBuffer_Init(rbd_t *rbd, rb_attr_t *attr);
+int RingBuffer_Init(rbd_t *rbd, rb_attr_t *attr);
+int RingBuffer_Put(rbd_t rbd, const void *data);
+int RingBuffer_Get(rbd_t rbd, void *data);
 
 #ifdef __cplusplus
 }
