@@ -6,7 +6,7 @@ extern "C" {
 
 #include "artronics_config.h"
 
-#define RING_BUFFER_MAX ART_CAN_RX_BUF_SIZE
+#define RING_BUFFER_MAX ART_RING_BUFFER_MAX
 
 #ifdef __cplusplus
 }

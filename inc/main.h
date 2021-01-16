@@ -28,6 +28,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
+#include "artronics.h"
 #include "stm32f0xx_hal.h"
 
 #define MCO_Pin GPIO_PIN_0

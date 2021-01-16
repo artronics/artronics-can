@@ -1,6 +1,7 @@
 #include "main.h"
 #include "error_handler.h"
 #include "can.h"
+#include "ring_buffer.h"
 
 UART_HandleTypeDef huart2;
 CAN_TxHeaderTypeDef pTxHeader;
@@ -10,6 +11,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void transmit_can(void);
+
+static char buf[4] = {0};
 
 int main(void)
 {
@@ -35,6 +38,18 @@ int main(void)
 
   init_can();
   transmit_can();
+  rbd_t _rbd;
+  rb_attr_t _attr = {
+          .size_elem=sizeof(buf[0]),
+          .num_elem=4,
+          .buffer=buf,
+  };
+  RingBuffer_Init(&_rbd, &_attr);
+  int err = RingBuffer_Init(&_rbd, &_attr);
+  if (err == -1) {
+    __ASM("nop");
+  }
+
 
   while (1)
   {
