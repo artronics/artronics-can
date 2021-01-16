@@ -22,8 +22,19 @@ include_directories(
         tests/inc
 )
 
-add_subdirectory(tests)
+set(compile_options
+        -mcpu=cortex-m0
+        -mthumb
 
+        -fdata-sections
+        -ffunction-sections
+
+        -Wall
+        -Og
+        $<$<CONFIG:Debug>:-Og>
+        )
+
+add_subdirectory(tests)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -47,6 +58,11 @@ SET(SOURCES
         src/system_stm32f0xx.c
         )
 
+add_library(common INTERFACE)
+target_compile_options(common INTERFACE
+        ${compile_options}
+        )
+
 set(EXECUTABLE ${PROJECT_NAME}.out)
 add_executable(${EXECUTABLE} ${SOURCES})
 
@@ -57,18 +73,9 @@ target_compile_definitions(${EXECUTABLE} PRIVATE
         -DUSE_HAL_CAN_REGISTER_CALLBACKS=1
         )
 
-
-target_compile_options(${EXECUTABLE} PRIVATE
-        -mcpu=cortex-m0
-        -mthumb
-
-        -fdata-sections
-        -ffunction-sections
-
-        -Wall
-        -Og
-        $<$<CONFIG:Debug>:-Og>
-        )
+#target_compile_options(${EXECUTABLE} PRIVATE
+#        ${compile_options}
+#        )
 
 target_link_options(${EXECUTABLE} PRIVATE
         -T${CMAKE_SOURCE_DIR}/STM32F042K6Tx_FLASH.ld
@@ -82,6 +89,11 @@ target_link_options(${EXECUTABLE} PRIVATE
         -Wl,--gc-sections
         )
 
+target_compile_definitions(ring_buffer PRIVATE
+        -DRING_BUFFER_MAX=1
+        )
+target_link_libraries(${EXECUTABLE} PUBLIC common ring_buffer)
+
 add_custom_command(TARGET ${EXECUTABLE}
         POST_BUILD
         COMMAND arm-none-eabi-size ${EXECUTABLE})
@@ -92,6 +104,9 @@ add_custom_command(TARGET ${EXECUTABLE}
         COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE} ${PROJECT_NAME}.bin)
 
 add_executable(all_tests ${TEST_SOURCES})
+target_compile_definitions(ring_buffer PRIVATE
+        -DRING_BUFFER_MAX=32
+        )
 target_compile_definitions(all_tests PRIVATE
         -DUSE_HAL_DRIVER
         -DSTM32F042x6
