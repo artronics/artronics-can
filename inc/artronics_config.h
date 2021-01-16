@@ -3,6 +3,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define ART_RING_BUFFER_MAX 1
+
 #define ART_CAN_RX_BUF_SIZE 8
 
 #ifdef __cplusplus

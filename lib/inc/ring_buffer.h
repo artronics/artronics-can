@@ -8,7 +8,6 @@
 extern "C" {
 #endif
 
-#define RING_BUFFER_MAX 1
 
 typedef struct {
     size_t size_elem;
