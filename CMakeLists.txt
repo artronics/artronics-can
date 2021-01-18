@@ -30,8 +30,7 @@ set(compile_options
         -ffunction-sections
 
         -Wall
-        -Og
-        $<$<CONFIG:Debug>:-Og>
+        $<$<CONFIG:Debug>:-Og> # FIXME: It looks like this doesn't work
         )
 
 add_subdirectory(tests)
@@ -73,10 +72,6 @@ target_compile_definitions(${EXECUTABLE} PRIVATE
         -DUSE_HAL_CAN_REGISTER_CALLBACKS=1
         )
 
-#target_compile_options(${EXECUTABLE} PRIVATE
-#        ${compile_options}
-#        )
-
 target_link_options(${EXECUTABLE} PRIVATE
         -T${CMAKE_SOURCE_DIR}/STM32F042K6Tx_FLASH.ld
         -mcpu=cortex-m0
@@ -90,7 +85,7 @@ target_link_options(${EXECUTABLE} PRIVATE
         )
 
 target_compile_definitions(ring_buffer PRIVATE
-        -DRING_BUFFER_MAX=1
+        -DRING_BUFFER_MAX=8
         )
 target_link_libraries(${EXECUTABLE} PUBLIC common ring_buffer)
 
@@ -102,14 +97,3 @@ add_custom_command(TARGET ${EXECUTABLE}
         POST_BUILD
         COMMAND arm-none-eabi-objcopy -O ihex ${EXECUTABLE} ${PROJECT_NAME}.hex
         COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE} ${PROJECT_NAME}.bin)
-
-add_executable(all_tests ${TEST_SOURCES})
-target_compile_definitions(ring_buffer PRIVATE
-        -DRING_BUFFER_MAX=32
-        )
-target_compile_definitions(all_tests PRIVATE
-        -DUSE_HAL_DRIVER
-        -DSTM32F042x6
-        )
-target_link_libraries(all_tests gmock_main gtest_main ring_buffer)
-add_test(NAME all_tests COMMAND all_tests)
