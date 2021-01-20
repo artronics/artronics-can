@@ -11,9 +11,9 @@ protected:
       ASSERT_EQ(0, err);
     }
 
-    rbd_t _rbd;
+    RingBufferHandler _rbd;
     char _buf[BUFFER_SIZE] = {0};
-    rb_attr_t _attr = {
+    RingBufferInit _attr = {
             .size_elem=sizeof(_buf[0]),
             .num_elem=BUFFER_SIZE,
             .buffer=_buf,
@@ -56,9 +56,9 @@ TEST_F(RingBufferTest, RingBufer_Put_and_Get_ring_behaviour) {
 
 TEST_F(RingBufferTest, RingBufer_Init__buffer_size_should_be_power_of_two) {
   // Given
-  rbd_t rbd;
+  RingBufferHandler rbd;
   char buf[10] = {0};
-  rb_attr_t attr = {
+  RingBufferInit attr = {
           .size_elem=sizeof(buf[0]),
           .num_elem=sizeof(buf)/sizeof(buf[0]),
           .buffer=buf,
@@ -98,9 +98,9 @@ typedef struct test_data {
 
 TEST_F(RingBufferTest, RingBufer_Put__struct) {
   // Given
-  rbd_t rbd;
+  RingBufferHandler rbd;
   test_data_t buf[2] = {0};
-  rb_attr_t attr = {
+  RingBufferInit attr = {
           .size_elem=sizeof(buf[0]),
           .num_elem=sizeof(buf)/sizeof(buf[0]),
           .buffer=buf,

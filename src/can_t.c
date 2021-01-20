@@ -1,5 +1,5 @@
 #define USE_HAL_CAN_REGISTER_CALLBACKS 1
-#include "can.h"
+#include "can_t.h"
 #include "stm32f0xx_hal_can.h"
 #include "stm32f042x6.h"
 

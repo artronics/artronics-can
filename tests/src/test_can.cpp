@@ -1,7 +1,5 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-//#include "stm32f0xx_hal_can.h"
-//#include "can.h"
 
 using namespace testing;
 using ::testing::AtLeast;

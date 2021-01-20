@@ -1,6 +1,6 @@
 #include "main.h"
 #include "error_handler.h"
-#include "can.h"
+#include "can_t.h"
 #include "ring_buffer.h"
 
 UART_HandleTypeDef huart2;
@@ -38,8 +38,8 @@ int main(void)
 
   init_can();
   transmit_can();
-  rbd_t _rbd;
-  rb_attr_t _attr = {
+  RingBufferHandler _rbd;
+  RingBufferInit _attr = {
           .size_elem=sizeof(buf[0]),
           .num_elem=4,
           .buffer=buf,

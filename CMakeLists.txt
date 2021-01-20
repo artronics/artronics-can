@@ -50,7 +50,7 @@ SET(SOURCES
         startup_stm32f042x6.s
         src/main.c
         src/main.c
-        src/can.c
+        src/can_t.c
         src/error_handler.c
         src/stm32f0xx_hal_msp.c
         src/stm32f0xx_it.c
