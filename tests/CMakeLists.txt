@@ -41,5 +41,5 @@ target_compile_definitions(all_tests PRIVATE
         -DSTM32F042x6
         )
 target_link_libraries(all_tests gmock_main gtest_main)
-target_link_libraries(all_tests ring_buffer)
+target_link_libraries(all_tests ring_buffer can)
 add_test(NAME all_tests COMMAND all_tests)

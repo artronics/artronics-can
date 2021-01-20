@@ -13,13 +13,13 @@ typedef struct {
     size_t size_elem;
     size_t num_elem;
     void *buffer;
-} rb_attr_t;
+} RingBufferInit;
 
-typedef unsigned int rbd_t;
+typedef unsigned int RingBufferHandler;
 
-int RingBuffer_Init(rbd_t *rbd, rb_attr_t *attr);
-int RingBuffer_Put(rbd_t rbd, const void *data);
-int RingBuffer_Get(rbd_t rbd, void *data);
+int RingBuffer_Init(RingBufferHandler *rbd, RingBufferInit *rb_init);
+int RingBuffer_Put(RingBufferHandler rbd, const void *data);
+int RingBuffer_Get(RingBufferHandler rbd, void *data);
 
 #ifdef __cplusplus
 }
