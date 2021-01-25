@@ -1,8 +1,8 @@
 #include "can.h"
 
-static RingBufferHandler rbh;
+//static RingBufferHandler rbh;
 
-int Can_Init(RingBufferHandler rbh) {
+int Can_Init() {
 
 }
 

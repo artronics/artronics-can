@@ -3,23 +3,14 @@
 #ifdef __cplusplus
 extern C {
 #endif
-#include "stdbool.h"
-#include "stdint.h"
-
-#include "ring_buffer.h"
+#include "can_frame.h"
 
 typedef struct {
 
 } CanInit;
 
-typedef struct {
-    uint32_t id;
-    uint32_t data[2];
-    bool is_remote;
-    bool is_extended;
-} CanFrame;
 
-int Can_Init(RingBufferHandler rbh);
+int Can_Init(void);
 void Can_Receive(CanFrame const * can_frame);
 
 

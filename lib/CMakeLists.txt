@@ -8,7 +8,10 @@ add_library(state STATIC
         state.c
         inc/state.h
         )
-target_link_libraries(state PRIVATE common)
+target_link_libraries(state
+        PRIVATE common
+#        PRIVATE ring_buffer
+        )
 
 add_library(can STATIC
         can.c
