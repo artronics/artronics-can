@@ -13,7 +13,7 @@ static struct ring_buffer rb[RING_BUFFER_MAX];
 
 int RingBuffer_Init(RingBufferHandler *rbd, RingBufferInit *rb_init) {
   static int idx = 0;
-  int err = -1;
+  int err = RING_BUFFER_ERROR;
 
   if ((idx < RING_BUFFER_MAX) && (rbd != NULL) && (rb_init != NULL)) {
     if ((rb_init->buffer != NULL) && (rb_init->size_elem > 0)) {
@@ -27,7 +27,7 @@ int RingBuffer_Init(RingBufferHandler *rbd, RingBufferInit *rb_init) {
         rb[idx].num_elem = rb_init->num_elem;
 
         *rbd = idx++;
-        err = 0;
+        err = RING_BUFFER_OK;
       }
     }
   }
@@ -44,28 +44,28 @@ static int RingBuffer_empty(struct ring_buffer *rb) {
 }
 
 int RingBuffer_Put(RingBufferHandler rbd, const void *data) {
-  int err = 0;
+  int err = RING_BUFFER_OK;
 
   if ((rbd < RING_BUFFER_MAX) && (RingBuffer_full(&rb[rbd]) == 0)) {
     const size_t offset = (rb[rbd].head & (rb[rbd].num_elem - 1)) * rb[rbd].size_elem;
     memcpy(&(rb[rbd].buf[offset]), data, rb[rbd].size_elem);
     rb[rbd].head++;
   } else {
-    err = -1;
+    err = RING_BUFFER_ERROR;
   }
 
   return err;
 }
 
 int RingBuffer_Get(RingBufferHandler rbd, void *data) {
-  int err = 0;
+  int err = RING_BUFFER_OK;
 
   if ((rbd < RING_BUFFER_MAX) && (RingBuffer_empty(&rb[rbd]) == 0)) {
     const size_t offset = (rb[rbd].tail & (rb[rbd].num_elem - 1)) * rb[rbd].size_elem;
     memcpy(data, &(rb[rbd].buf[offset]), rb[rbd].size_elem);
     rb[rbd].tail++;
   } else {
-    err = -1;
+    err = RING_BUFFER_ERROR;
   }
 
   return err;

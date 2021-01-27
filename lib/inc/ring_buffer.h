@@ -8,6 +8,8 @@
 extern "C" {
 #endif
 
+#define RING_BUFFER_ERROR -1
+#define RING_BUFFER_OK 0
 
 typedef struct {
     size_t size_elem;

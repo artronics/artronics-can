@@ -22,6 +22,6 @@ public:
     static std::unique_ptr<MessageProcessorMock> _messageProcessorMock;
 };
 
-std::function<int(RingBufferHandler rbh, void *data)> stub_RingBuffer_Get(CanFrame expFrame);
+std::function<int(RingBufferHandler rbh, void *data)> stub_RingBuffer_Get(CanFrame expFrame, int return_v);
 
 #endif //ARTRONICS_STATEFIXTURE_H

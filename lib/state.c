@@ -40,7 +40,8 @@ _Noreturn static void State_start_thread(void) {
 
 static void State_process(void) {
   CanFrame frame;
-  RingBuffer_Get(can_rx_h, &frame);
+  while (RingBuffer_Get(can_rx_h, &frame) == RING_BUFFER_OK){
+    MessageProcessor_Process(&frame);
+  }
 
-  MessageProcessor_Process(&frame);
 }
