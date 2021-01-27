@@ -7,7 +7,7 @@ MATCHER_P(StructEq, value, "Check deref struct equality (must override ==)") {re
 
 namespace test_utils {
     namespace matchers {
-        MATCHER_P2(RingBufferInit_matcher, num_elem, size_elem, "kir") {return (arg->num_elem == num_elem) && (arg->size_elem == size_elem);}
+        MATCHER_P2(RingBufferInit_matcher, num_elem, size_elem, "Check element's size and number of elements") {return (arg->num_elem == num_elem) && (arg->size_elem == size_elem);}
     }
 }
 #endif //ARTRONICS_TEST_UTILS_H

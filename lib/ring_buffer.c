@@ -11,7 +11,6 @@ struct ring_buffer {
 
 static struct ring_buffer rb[RING_BUFFER_MAX];
 
-int RingBuffer_Foo(int i) { }
 int RingBuffer_Init(RingBufferHandler *rbd, RingBufferInit *rb_init) {
   static int idx = 0;
   int err = -1;

@@ -20,7 +20,6 @@ typedef unsigned int RingBufferHandler;
 int RingBuffer_Init(RingBufferHandler *rbd, RingBufferInit *rb_init);
 int RingBuffer_Put(RingBufferHandler rbd, const void *data);
 int RingBuffer_Get(RingBufferHandler rbd, void *data);
-int RingBuffer_Foo(int i);
 
 #ifdef __cplusplus
 }

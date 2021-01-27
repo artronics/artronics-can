@@ -9,11 +9,11 @@ using namespace ::testing;
 using ::testing::Return;
 using namespace ::test_utils;
 
-class StateTest2 : public StateFixture {
+class StateTest : public StateFixture {
 public:
-    ~StateTest2() override = default;
+    ~StateTest() override = default;
 
-    StateTest2() = default;
+    StateTest() = default;
 };
 
 CanFrame rxFrame0 = {
@@ -23,7 +23,7 @@ CanFrame rxFrame0 = {
         .is_extended = false,
 };
 
-TEST_F(StateTest2, State_Init__calls_RingBuffer_Init) {
+TEST_F(StateTest, State_Init__calls_RingBuffer_Init) {
   // Given
   RingBufferHandler *rbh = State_GetCanRxBufHandler();
   EXPECT_CALL(*_ringBufferMock, RingBuffer_Init(rbh, matchers::RingBufferInit_matcher(STATE_CAN_RX_BUF_SIZE, sizeof(CanFrame))));
@@ -32,7 +32,7 @@ TEST_F(StateTest2, State_Init__calls_RingBuffer_Init) {
   State_Init();
 }
 
-TEST_F(StateTest2, State_Start__should_process_can_rx_frames) {
+TEST_F(StateTest, State_Start__should_process_can_rx_frames) {
   // Given
   RingBufferHandler *rbh = State_GetCanRxBufHandler();
   EXPECT_CALL(*_ringBufferMock, RingBuffer_Get(*rbh, _))
