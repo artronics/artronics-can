@@ -7,14 +7,8 @@
 class MessageProcessorMock {
 public:
     virtual ~MessageProcessorMock()= default;
+    MOCK_METHOD(int, MessageProcessor_init, ());
     MOCK_METHOD(void, MessageProcessor_Process, (CanFrame *frame));
 };
 
-typedef struct {
-    void MessageProcessor_Process(CanFrame *frame) {
-      _frame = frame;
-    }
-
-    CanFrame *_frame;
-} MessageProcessorArgCaptor;
 #endif //ARTRONICS_MESSAGEPROCESSORMOCK_H

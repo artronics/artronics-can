@@ -7,6 +7,7 @@ extern "C" {
 
 #include "can_frame.h"
 
+int MessageProcessor_init(void);
 void MessageProcessor_Process(CanFrame *frame);
 
 #ifdef __cplusplus

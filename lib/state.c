@@ -11,12 +11,15 @@ static RingBufferHandler can_rx_h;
 
 
 int State_Init(void) {
+  // Init dependencies
+  // TODO: implement error handling
+  MessageProcessor_init();
+
   RingBufferInit rb_init = {
           .size_elem=sizeof(can_rx_buf[0]),
           .num_elem=STATE_CAN_RX_BUF_SIZE,
           .buffer=can_rx_buf,
   };
-
   RingBuffer_Init(&can_rx_h, &rb_init);
 }
 

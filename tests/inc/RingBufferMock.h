@@ -13,17 +13,4 @@ public:
     MOCK_METHOD(int, RingBuffer_Get, (RingBufferHandler, void *));
 };
 
-typedef struct {
-    int RingBuffer_Init(RingBufferHandler *rbh, RingBufferInit *rb_init) {
-      _rb_init = *rb_init;
-      _rbh = rbh;
-
-      return 0;
-    }
-
-    ::RingBufferInit _rb_init;
-    RingBufferHandler *_rbh;
-} RingBufferArgCaptor;
-
-
 #endif //ARTRONICS_RINGBUFFERMOCK_H

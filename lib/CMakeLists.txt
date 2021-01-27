@@ -1,3 +1,5 @@
+add_subdirectory(hal)
+
 add_library(ring_buffer STATIC
         ring_buffer.c
         inc/ring_buffer.h

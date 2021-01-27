@@ -33,6 +33,7 @@ CanFrame rxFrame1 = {
 TEST_F(StateTest, State_Init__calls_RingBuffer_Init) {
   // Given
   RingBufferHandler *rbh = State_GetCanRxBufHandler();
+  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_init());
   EXPECT_CALL(*_ringBufferMock,
               RingBuffer_Init(rbh, matchers::RingBufferInit_matcher(STATE_CAN_RX_BUF_SIZE, sizeof(CanFrame))));
 

@@ -37,6 +37,7 @@ set(TEST_SOURCES
 
 add_executable(all_tests ${TEST_SOURCES})
 add_executable(state_tests ${CMAKE_CURRENT_SOURCE_DIR}/src/test_state.cpp mocks/StateFixture.cpp)
+add_executable(message_processor_tests ${CMAKE_CURRENT_SOURCE_DIR}/src/test_message_processor.cpp)
 target_compile_definitions(all_tests PRIVATE
         -DUSE_HAL_DRIVER
         -DSTM32F042x6
@@ -44,6 +45,7 @@ target_compile_definitions(all_tests PRIVATE
 
 target_link_libraries(all_tests gmock_main gtest_main)
 target_link_libraries(all_tests ring_buffer state can message_processor)
-target_link_libraries(state_tests gtest_main gmock state )
+target_link_libraries(state_tests gtest_main gmock state)
+target_link_libraries(message_processor_tests gtest_main gmock message_processor)
 add_test(NAME all_tests COMMAND all_tests)
 add_test(NAME state_tests COMMAND state)

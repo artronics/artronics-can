@@ -17,6 +17,10 @@ void MessageProcessor_Process(CanFrame *frame) {
   return StateFixture::_messageProcessorMock->MessageProcessor_Process(frame);
 }
 
+int MessageProcessor_init(void) {
+  return StateFixture::_messageProcessorMock->MessageProcessor_init();
+}
+
 std::function<int(RingBufferHandler rbh, void *data)> stub_RingBuffer_Get(CanFrame expFrame, int return_v) {
   auto RingBuffer_Get = [expFrame, return_v](RingBufferHandler rbh, void *data) {
       auto *t = (CanFrame *)data;
