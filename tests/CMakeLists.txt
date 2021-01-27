@@ -29,26 +29,15 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
     include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-set(TEST_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/test_main.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_can.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/test_ring_buffer.cpp
-        )
 
-add_executable(all_tests ${TEST_SOURCES})
+add_executable(ring_buffer_tests src/test_ring_buffer.cpp)
 add_executable(state_tests src/test_state.cpp mocks/StateFixture.cpp)
 add_executable(message_processor_tests src/test_message_processor.cpp mocks/MessageProcessorFixture.cpp)
 
-target_compile_definitions(all_tests PRIVATE
-        -DUSE_HAL_DRIVER
-        -DSTM32F042x6
-        )
-
-target_link_libraries(all_tests gmock_main gtest_main)
-target_link_libraries(all_tests ring_buffer state can message_processor)
+target_link_libraries(ring_buffer_tests gtest_main gmock ring_buffer)
 target_link_libraries(state_tests gtest_main gmock state)
 target_link_libraries(message_processor_tests gtest_main gmock message_processor)
 
-add_test(NAME all_tests COMMAND all_tests)
+add_test(NAME ring_buffer_tests COMMAND ring_buffer)
 add_test(NAME state_tests COMMAND state)
 add_test(NAME message_processor_tests COMMAND message_processor)
