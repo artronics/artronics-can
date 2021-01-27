@@ -11,7 +11,7 @@ struct ring_buffer {
 
 static struct ring_buffer rb[RING_BUFFER_MAX];
 
-int RingBuffer_Init(RingBufferHandler *rbd, RingBufferInit *rb_init) {
+int RingBuffer_init(RingBufferHandler *rbd, RingBufferInit *rb_init) {
   static int idx = 0;
   int err = RING_BUFFER_ERROR;
 
@@ -43,7 +43,7 @@ static int RingBuffer_empty(struct ring_buffer *rb) {
   return ((rb->head - rb->tail) == 0U) ? 1 : 0;
 }
 
-int RingBuffer_Put(RingBufferHandler rbd, const void *data) {
+int RingBuffer_put(RingBufferHandler rbd, const void *data) {
   int err = RING_BUFFER_OK;
 
   if ((rbd < RING_BUFFER_MAX) && (RingBuffer_full(&rb[rbd]) == 0)) {
@@ -57,7 +57,7 @@ int RingBuffer_Put(RingBufferHandler rbd, const void *data) {
   return err;
 }
 
-int RingBuffer_Get(RingBufferHandler rbd, void *data) {
+int RingBuffer_get(RingBufferHandler rbd, void *data) {
   int err = RING_BUFFER_OK;
 
   if ((rbd < RING_BUFFER_MAX) && (RingBuffer_empty(&rb[rbd]) == 0)) {

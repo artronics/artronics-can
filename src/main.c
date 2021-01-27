@@ -44,8 +44,8 @@ int main(void)
           .num_elem=4,
           .buffer=buf,
   };
-  RingBuffer_Init(&_rbd, &_attr);
-  int err = RingBuffer_Init(&_rbd, &_attr);
+  RingBuffer_init(&_rbd, &_attr);
+  int err = RingBuffer_init(&_rbd, &_attr);
   if (err == -1) {
     __ASM("nop");
   }

@@ -9,8 +9,8 @@ extern "C" {
 
 #define STATE_CAN_RX_BUF_SIZE 8
 
-int State_Init(void);
-int State_Start(bool isThread);
+int State_init(void);
+int State_start(bool isThread);
 
 RingBufferHandler *State_GetCanRxBufHandler(void);
 

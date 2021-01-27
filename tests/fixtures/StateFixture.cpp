@@ -5,16 +5,16 @@
 std::unique_ptr<RingBufferMock> StateFixture::_ringBufferMock;
 std::unique_ptr<MessageProcessorMock> StateFixture::_messageProcessorMock;
 
-int RingBuffer_Init(RingBufferHandler *rbd, RingBufferInit *rb_init) {
-  return StateFixture::_ringBufferMock->RingBuffer_Init(rbd, rb_init);
+int RingBuffer_init(RingBufferHandler *rbd, RingBufferInit *rb_init) {
+  return StateFixture::_ringBufferMock->RingBuffer_init(rbd, rb_init);
 }
 
-int RingBuffer_Get(RingBufferHandler rbd, void *data) {
-  return StateFixture::_ringBufferMock->RingBuffer_Get(rbd, data);
+int RingBuffer_get(RingBufferHandler rbd, void *data) {
+  return StateFixture::_ringBufferMock->RingBuffer_get(rbd, data);
 }
 
-void MessageProcessor_Process(CanFrame *frame) {
-  return StateFixture::_messageProcessorMock->MessageProcessor_Process(frame);
+void MessageProcessor_process(CanFrame *frame) {
+  return StateFixture::_messageProcessorMock->MessageProcessor_process(frame);
 }
 
 int MessageProcessor_init(void) {

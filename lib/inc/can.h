@@ -10,8 +10,8 @@ typedef struct {
 } CanInit;
 
 
-int Can_Init(void);
-void Can_Receive(CanFrame const * can_frame);
+int Can_init(void);
+void Can_receive(CanFrame const * can_frame);
 
 
 #ifdef __cplusplus

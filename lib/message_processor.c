@@ -7,6 +7,6 @@ int MessageProcessor_init(void) {
   return 0;
 }
 
-void MessageProcessor_Process(CanFrame *frame) {
+void MessageProcessor_process(CanFrame *frame) {
 
 }

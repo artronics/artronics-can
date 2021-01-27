@@ -2,11 +2,11 @@
 
 //static RingBufferHandler rbh;
 
-int Can_Init() {
+int Can_init() {
 
 }
 
-void Can_Receive(CanFrame const * const can_frame) {
+void Can_receive(const CanFrame *can_frame) {
 
 }
 

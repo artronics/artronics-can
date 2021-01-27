@@ -8,7 +8,7 @@ class MessageProcessorMock {
 public:
     virtual ~MessageProcessorMock()= default;
     MOCK_METHOD(int, MessageProcessor_init, ());
-    MOCK_METHOD(void, MessageProcessor_Process, (CanFrame *frame));
+    MOCK_METHOD(void, MessageProcessor_process, (CanFrame *frame));
 };
 
 #endif //ARTRONICS_MESSAGEPROCESSORMOCK_H

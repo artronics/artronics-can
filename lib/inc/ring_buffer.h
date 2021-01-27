@@ -19,9 +19,9 @@ typedef struct {
 
 typedef unsigned int RingBufferHandler;
 
-int RingBuffer_Init(RingBufferHandler *rbd, RingBufferInit *rb_init);
-int RingBuffer_Put(RingBufferHandler rbd, const void *data);
-int RingBuffer_Get(RingBufferHandler rbd, void *data);
+int RingBuffer_init(RingBufferHandler *rbd, RingBufferInit *rb_init);
+int RingBuffer_put(RingBufferHandler rbd, const void *data);
+int RingBuffer_get(RingBufferHandler rbd, void *data);
 
 #ifdef __cplusplus
 }

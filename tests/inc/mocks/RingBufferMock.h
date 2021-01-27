@@ -8,9 +8,8 @@
 class RingBufferMock {
 public:
     virtual ~RingBufferMock()= default;;
-    MOCK_METHOD(int, RingBuffer_Foo, (int));
-    MOCK_METHOD(int, RingBuffer_Init, (RingBufferHandler *, RingBufferInit *));
-    MOCK_METHOD(int, RingBuffer_Get, (RingBufferHandler, void *));
+    MOCK_METHOD(int, RingBuffer_init, (RingBufferHandler *, RingBufferInit *));
+    MOCK_METHOD(int, RingBuffer_get, (RingBufferHandler, void *));
 };
 
 #endif //ARTRONICS_RINGBUFFERMOCK_H
