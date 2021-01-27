@@ -21,6 +21,7 @@ include_directories(
 )
 include_directories(
         tests/inc
+        tests/inc/mocks
 )
 
 set(compile_options
