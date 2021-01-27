@@ -1,5 +1,5 @@
 #include "message_processor.h"
-#include "hal_module_id.h"
+#include "hal/hal_module_id.h"
 
 int MessageProcessor_init(void) {
   HalModuleId_init();

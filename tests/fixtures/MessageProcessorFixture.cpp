@@ -1,5 +1,5 @@
 #include "MessageProcessorFixture.h"
-#include "hal_module_id.h"
+#include "hal/hal_module_id.h"
 
 std::unique_ptr<HalModuleIdMock> MessageProcessorFixture::_halModuleIdMock;
 

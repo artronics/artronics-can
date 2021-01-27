@@ -2,7 +2,7 @@
 #define ARTRONICS_HALMODULEIDMOCK_H
 
 #include "gmock/gmock.h"
-#include "hal_module_id.h"
+#include "hal/hal_module_id.h"
 
 class HalModuleIdMock {
 public:

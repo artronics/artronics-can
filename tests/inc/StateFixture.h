@@ -1,8 +1,8 @@
 #ifndef ARTRONICS_STATEFIXTURE_H
 #define ARTRONICS_STATEFIXTURE_H
 
-#include "RingBufferMock.h"
-#include "MessageProcessorMock.h"
+#include "mocks/RingBufferMock.h"
+#include "mocks/MessageProcessorMock.h"
 
 class StateFixture: public ::testing::Test {
 public:

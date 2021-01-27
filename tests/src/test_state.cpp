@@ -2,7 +2,7 @@
 #include "gmock/gmock.h"
 #include "state.h"
 #include "StateFixture.h"
-#include "RingBufferMock.h"
+#include "mocks/RingBufferMock.h"
 #include "test_utils.h"
 
 using namespace ::testing;
