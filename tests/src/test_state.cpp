@@ -14,21 +14,24 @@ public:
     ~StateTest() override = default;
 
     StateTest() = default;
+
+    constexpr static const CanFrame _rxFrame0 = {
+            .id = 1,
+            .data = {0xAA, 0xBB, 0xFF, 0},
+            .data_size = 3,
+            .is_remote = false,
+            .is_extended = false,
+    };
+
+    constexpr static const CanFrame _rxFrame1 = {
+            .id = 2,
+            .data = {0xCC, 0xDD},
+            .data_size = 2,
+            .is_remote = false,
+            .is_extended = false,
+    };
 };
 
-CanFrame rxFrame0 = {
-        .id = 1,
-        .data = {0xAA, 0xBB},
-        .is_remote = false,
-        .is_extended = false,
-};
-
-CanFrame rxFrame1 = {
-        .id = 2,
-        .data = {0xCC, 0xDD},
-        .is_remote = false,
-        .is_extended = false,
-};
 
 TEST_F(StateTest, State_init__should_init_dependencies) {
   // Given
@@ -51,12 +54,12 @@ TEST_F(StateTest, State_Start__should_process_can_rx_frames_until_empty) {
   RingBufferHandler *rbh = State_GetCanRxBufHandler();
   EXPECT_CALL(*_ringBufferMock, RingBuffer_get(*rbh, _))
           .Times(3)
-          .WillOnce(Invoke(stub_RingBuffer_Get(rxFrame0, RING_BUFFER_OK)))
-          .WillOnce(Invoke(stub_RingBuffer_Get(rxFrame1, RING_BUFFER_OK)))
-          .WillOnce(Invoke(stub_RingBuffer_Get(rxFrame1, RING_BUFFER_ERROR)));
+          .WillOnce(Invoke(stub_RingBuffer_Get(_rxFrame0, RING_BUFFER_OK)))
+          .WillOnce(Invoke(stub_RingBuffer_Get(_rxFrame1, RING_BUFFER_OK)))
+          .WillOnce(Invoke(stub_RingBuffer_Get(_rxFrame1, RING_BUFFER_ERROR)));
 
-  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(matchers::BitwiseStructEq(rxFrame0)));
-  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(matchers::BitwiseStructEq(rxFrame1)));
+  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(matchers::BitwiseStructEq(_rxFrame0)));
+  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(matchers::BitwiseStructEq(_rxFrame1)));
 
   State_init();
 
