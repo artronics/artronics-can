@@ -5,7 +5,8 @@ extern "C" {
 #endif
 
 typedef enum MessageId {
-    ModuleId = 0x123
+    Unknown = 0x234,
+    ModuleId = 0x123,
 
 } MessageId;
 

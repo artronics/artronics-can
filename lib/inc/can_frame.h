@@ -7,23 +7,18 @@ extern "C" {
 #include "stdbool.h"
 #include "stdint.h"
 
+#define CAN_FRAME_MAX_DATA_LEN 8
+
 typedef struct CanFrame {
     uint32_t id;
     uint32_t data[2];
+//    uint8_t data[CAN_FRAME_MAX_DATA_LEN];
+//    size_t data_size;
     bool is_remote;
     bool is_extended;
-#ifdef __cplusplus
-
-    bool operator==(const CanFrame &rhs) const {
-      return id == rhs.id
-             && is_remote == rhs.is_remote
-             && is_extended == rhs.is_extended
-             && data[0] == rhs.data[0]
-             && data[1] == rhs.data[1];
-    }
-
-#endif
 } CanFrame;
+
+//int CanFrame_make(CanFrame *frame, uint32_t id, uint32_t *data, size_t size, );
 
 #ifdef __cplusplus
 }

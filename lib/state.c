@@ -8,12 +8,20 @@ static void State_process(void);
 
 static CanFrame can_rx_buf[STATE_CAN_RX_BUF_SIZE];
 static RingBufferHandler can_rx_h;
-
+static CanFrame can_tx_buf[STATE_CAN_TX_BUF_SIZE];
+static RingBufferHandler can_tx_h;
 
 int State_init(void) {
   // Init dependencies
   // TODO: implement error handling
-  MessageProcessor_init();
+  RingBufferInit rb_tx_init = {
+          .size_elem=sizeof(can_tx_buf[0]),
+          .num_elem=STATE_CAN_TX_BUF_SIZE,
+          .buffer=can_tx_buf,
+  };
+  RingBuffer_init(&can_tx_h, &rb_tx_init);
+
+  MessageProcessor_init(can_tx_h);
 
   RingBufferInit rb_init = {
           .size_elem=sizeof(can_rx_buf[0]),
@@ -33,6 +41,10 @@ int State_start(bool isThread) {
 
 RingBufferHandler *State_GetCanRxBufHandler(void) {
   return &can_rx_h;
+}
+
+RingBufferHandler *State_GetCanTxBufHandler(void) {
+  return &can_tx_h;
 }
 
 _Noreturn static void State_start_thread(void) {

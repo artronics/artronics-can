@@ -30,12 +30,17 @@ CanFrame rxFrame1 = {
         .is_extended = false,
 };
 
-TEST_F(StateTest, State_Init__calls_RingBuffer_Init) {
+TEST_F(StateTest, State_init__should_init_dependencies) {
   // Given
-  RingBufferHandler *rbh = State_GetCanRxBufHandler();
-  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_init());
+  RingBufferHandler *rxh = State_GetCanRxBufHandler();
+  RingBufferHandler *txh = State_GetCanTxBufHandler();
+
+  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_init(*txh));
+
   EXPECT_CALL(*_ringBufferMock,
-              RingBuffer_init(rbh, matchers::RingBufferInit_matcher(STATE_CAN_RX_BUF_SIZE, sizeof(CanFrame))));
+              RingBuffer_init(rxh, matchers::RingBufferInit_matcher(STATE_CAN_RX_BUF_SIZE, sizeof(CanFrame))));
+  EXPECT_CALL(*_ringBufferMock,
+              RingBuffer_init(txh, matchers::RingBufferInit_matcher(STATE_CAN_TX_BUF_SIZE, sizeof(CanFrame))));
 
   // When
   State_init();
@@ -50,8 +55,8 @@ TEST_F(StateTest, State_Start__should_process_can_rx_frames_until_empty) {
           .WillOnce(Invoke(stub_RingBuffer_Get(rxFrame1, RING_BUFFER_OK)))
           .WillOnce(Invoke(stub_RingBuffer_Get(rxFrame1, RING_BUFFER_ERROR)));
 
-  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(StructEq(rxFrame0)));
-  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(StructEq(rxFrame1)));
+  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(matchers::BitwiseStructEq(rxFrame0)));
+  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(matchers::BitwiseStructEq(rxFrame1)));
 
   State_init();
 
