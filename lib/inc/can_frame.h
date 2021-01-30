@@ -11,9 +11,9 @@ extern "C" {
 #define CAN_FRAME_MAX_DATA_LEN 8
 
 typedef struct CanFrame {
-    uint32_t id;
     uint8_t data[CAN_FRAME_MAX_DATA_LEN];
     size_t data_size;
+    uint32_t id;
     bool is_remote;
     bool is_extended;
 } CanFrame;

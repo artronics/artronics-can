@@ -8,7 +8,7 @@ class HalModuleIdMock {
 public:
     virtual ~HalModuleIdMock()= default;;
     MOCK_METHOD(int, HalModuleId_init, ());
-    MOCK_METHOD(uint8_t *, HalModuleId_get64BitId, ());
+    MOCK_METHOD(const uint8_t * , HalModuleId_get64BitId, ());
 };
 
 #endif //ARTRONICS_HALMODULEIDMOCK_H

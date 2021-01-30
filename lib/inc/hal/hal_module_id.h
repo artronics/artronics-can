@@ -7,7 +7,7 @@ extern "C" {
 #include <stdint.h>
 
 int HalModuleId_init(void);
-uint8_t *HalModuleId_get64BitId(void);
+const uint8_t * HalModuleId_get64BitId(void);
 
 #ifdef __cplusplus
 }

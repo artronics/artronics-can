@@ -17,7 +17,7 @@ int RingBuffer_put(RingBufferHandler rbd, const void *data) {
   return StateFixture::_ringBufferMock->RingBuffer_put(rbd, data);
 }
 
-void MessageProcessor_process(CanFrame *frame) {
+void MessageProcessor_process(const CanFrame * const frame) {
   return StateFixture::_messageProcessorMock->MessageProcessor_process(frame);
 }
 
