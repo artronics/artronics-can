@@ -13,6 +13,10 @@ int RingBuffer_get(RingBufferHandler rbd, void *data) {
   return StateFixture::_ringBufferMock->RingBuffer_get(rbd, data);
 }
 
+int RingBuffer_put(RingBufferHandler rbd, const void *data) {
+  return StateFixture::_ringBufferMock->RingBuffer_put(rbd, data);
+}
+
 void MessageProcessor_process(CanFrame *frame) {
   return StateFixture::_messageProcessorMock->MessageProcessor_process(frame);
 }
