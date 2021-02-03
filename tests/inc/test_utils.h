@@ -28,6 +28,10 @@ namespace test_utils {
           return (arg->num_elem == num_elem) && (arg->size_elem == size_elem);
         }
 
+        MATCHER_P2(EqIf, predicate, value, "Check equality with a predicate.") {
+          return predicate(value, *arg);
+        }
+
         MATCHER_P(BitwiseStructEq, value, "Check bitwise equality of a struct") {
           return (bitwise_equal<decltype(value)>(value, *arg));
         }

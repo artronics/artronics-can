@@ -16,20 +16,25 @@ public:
     StateTest() = default;
 
     constexpr static const CanFrame _rxFrame0 = {
-            .id = 1,
             .data = {0xAA, 0xBB, 0xFF, 0},
             .data_size = 3,
+            .id = 1,
             .is_remote = false,
             .is_extended = false,
     };
 
     constexpr static const CanFrame _rxFrame1 = {
-            .id = 2,
             .data = {0xCC, 0xDD},
             .data_size = 2,
+            .id = 2,
             .is_remote = false,
             .is_extended = false,
     };
+};
+
+// TODO: This doesn't check the buffer pointer. Add it to eq
+const static auto ringBufferInitEq = [] (const RingBufferInit l, const RingBufferInit r) {
+    return (l.num_elem == r.num_elem) && (l.size_elem == r.size_elem);
 };
 
 
@@ -40,10 +45,18 @@ TEST_F(StateTest, State_init__should_init_dependencies) {
 
   EXPECT_CALL(*_messageProcessorMock, MessageProcessor_init(*txh));
 
+  const RingBufferInit expRBRxInit = {
+          .size_elem = sizeof(CanFrame),
+          .num_elem = STATE_CAN_RX_BUF_SIZE,
+  };
+  const RingBufferInit expRBTxInit = {
+          .size_elem = sizeof(CanFrame),
+          .num_elem = STATE_CAN_TX_BUF_SIZE,
+  };
   EXPECT_CALL(*_ringBufferMock,
-              RingBuffer_init(rxh, matchers::RingBufferInit_matcher(STATE_CAN_RX_BUF_SIZE, sizeof(CanFrame))));
+              RingBuffer_init(rxh, matchers::EqIf(ringBufferInitEq, expRBRxInit)));
   EXPECT_CALL(*_ringBufferMock,
-              RingBuffer_init(txh, matchers::RingBufferInit_matcher(STATE_CAN_TX_BUF_SIZE, sizeof(CanFrame))));
+              RingBuffer_init(txh, matchers::EqIf(ringBufferInitEq, expRBTxInit)));
 
   // When
   State_init();

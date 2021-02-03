@@ -25,6 +25,13 @@ int MessageProcessor_init(RingBufferHandler rbh) {
   return StateFixture::_messageProcessorMock->MessageProcessor_init(rbh);
 }
 
+/**
+ * This function will return a lambda which can be used as a stub for #RingBuffer_get
+ * @param expFrame the frame which the stub will return as function parameter
+ * @param return_v the return value of the stub (error no)
+ * @return
+ */
+
 std::function<int(RingBufferHandler rbh, void *data)> stub_RingBuffer_Get(CanFrame expFrame, int return_v) {
   auto RingBuffer_Get = [expFrame, return_v](RingBufferHandler rbh, void *data) {
       auto *t = (CanFrame *)data;
