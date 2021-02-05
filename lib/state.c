@@ -2,6 +2,7 @@
 #include "ring_buffer.h"
 #include "can_frame.h"
 #include "message_processor.h"
+#include "can.h"
 
 _Noreturn static void State_start_thread(void);
 static void State_process(void);
@@ -20,7 +21,6 @@ int State_init(void) {
           .buffer=can_tx_buf,
   };
   RingBuffer_init(&can_tx_h, &rb_tx_init);
-
   MessageProcessor_init(can_tx_h);
 
   RingBufferInit rb_init = {
@@ -29,6 +29,9 @@ int State_init(void) {
           .buffer=can_rx_buf,
   };
   RingBuffer_init(&can_rx_h, &rb_init);
+  Can_init(&can_rx_h);
+
+  return 0;
 }
 
 int State_start(bool isThread) {
@@ -37,6 +40,7 @@ int State_start(bool isThread) {
   } else {
     State_process();
   }
+  return 0;
 }
 
 RingBufferHandler *State_GetCanRxBufHandler(void) {
