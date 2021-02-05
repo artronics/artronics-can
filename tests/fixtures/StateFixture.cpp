@@ -6,6 +6,7 @@ std::unique_ptr<RingBufferMock> StateFixture::_ringBufferMock;
 std::unique_ptr<MessageProcessorMock> StateFixture::_messageProcessorMock;
 std::unique_ptr<CanMock> StateFixture::_canMock;
 
+// RingBufferMock
 int RingBuffer_init(RingBufferHandler *rbd, RingBufferInit *rb_init) {
   return StateFixture::_ringBufferMock->RingBuffer_init(rbd, rb_init);
 }
@@ -18,10 +19,16 @@ int RingBuffer_put(RingBufferHandler rbd, const void *data) {
   return StateFixture::_ringBufferMock->RingBuffer_put(rbd, data);
 }
 
+// CanMock
 int Can_init(const RingBufferHandler * const  can_rx_h) {
   return StateFixture::_canMock->Can_init(can_rx_h);
 }
 
+int Can_transmit(const CanFrame * const  frame) {
+  return StateFixture::_canMock->Can_transmit(frame);
+}
+
+// MessageProcessorMock
 void MessageProcessor_process(const CanFrame * const frame) {
   return StateFixture::_messageProcessorMock->MessageProcessor_process(frame);
 }

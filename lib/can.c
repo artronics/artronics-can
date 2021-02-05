@@ -7,7 +7,6 @@ int Can_init(const RingBufferHandler * const _can_rx_h) {
   return 0;
 }
 
-void Can_receive(const CanFrame *can_frame) {
-
+int Can_transmit(const CanFrame * const frame) {
+  return 0;
 }
-

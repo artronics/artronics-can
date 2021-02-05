@@ -8,6 +8,7 @@ class CanMock {
 public:
     virtual ~CanMock()= default;;
     MOCK_METHOD(int, Can_init, (const RingBufferHandler * const can_rx_h));
+    MOCK_METHOD(int, Can_transmit, (const CanFrame * const frame));
 };
 
 

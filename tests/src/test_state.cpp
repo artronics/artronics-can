@@ -15,7 +15,10 @@ public:
 
     StateTest() = default;
 
-    constexpr static const CanFrame _rxFrame0 = {
+protected:
+    constexpr static const RingBufferHandler _rbTxH = 1;
+    constexpr static const RingBufferHandler _rbRxH = 2;
+    constexpr static const CanFrame _canFrame0 = {
             .data = {0xAA, 0xBB, 0xFF, 0},
             .data_size = 3,
             .id = 1,
@@ -23,7 +26,7 @@ public:
             .is_extended = false,
     };
 
-    constexpr static const CanFrame _rxFrame1 = {
+    constexpr static const CanFrame _canFrame1 = {
             .data = {0xCC, 0xDD},
             .data_size = 2,
             .id = 2,
@@ -33,7 +36,7 @@ public:
 };
 
 // TODO: This doesn't check the buffer pointer. Add it to eq
-const static auto ringBufferInitEq = [] (const RingBufferInit l, const RingBufferInit r) {
+const static auto ringBufferInitEq = [](const RingBufferInit l, const RingBufferInit r) {
     return (l.num_elem == r.num_elem) && (l.size_elem == r.size_elem);
 };
 
@@ -65,15 +68,59 @@ TEST_F(StateTest, State_init__should_init_dependencies) {
 
 TEST_F(StateTest, State_Start__should_process_can_rx_frames_until_empty) {
   // Given
-  RingBufferHandler *rbh = State_GetCanRxBufHandler();
-  EXPECT_CALL(*_ringBufferMock, RingBuffer_get(*rbh, _))
-          .Times(3)
-          .WillOnce(Invoke(stub_RingBuffer_Get(_rxFrame0, RING_BUFFER_OK)))
-          .WillOnce(Invoke(stub_RingBuffer_Get(_rxFrame1, RING_BUFFER_OK)))
-          .WillOnce(Invoke(stub_RingBuffer_Get(_rxFrame1, RING_BUFFER_ERROR)));
+  EXPECT_CALL(*_ringBufferMock, RingBuffer_init(_, _))
+          .WillOnce(Invoke(
+                  [=](auto *rbh, auto *rbInit) {
+                      *rbh = _rbTxH; // tx
+                      return 0;
+                  }))
+          .WillOnce(Invoke(
+                  [=](auto *rbh, auto *rbInit) {
+                      *rbh = _rbRxH; // rx
+                      return 0;
+                  }));
 
-  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(matchers::BitwiseStructEq(_rxFrame0)));
-  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(matchers::BitwiseStructEq(_rxFrame1)));
+  EXPECT_CALL(*_ringBufferMock, RingBuffer_get(_rbTxH, _))
+          .WillOnce(Invoke(stub_RingBuffer_Get(_canFrame0, RING_BUFFER_ERROR)));
+  EXPECT_CALL(*_ringBufferMock, RingBuffer_get(_rbRxH, _))
+          .Times(3)
+          .WillOnce(Invoke(stub_RingBuffer_Get(_canFrame0, RING_BUFFER_OK)))
+          .WillOnce(Invoke(stub_RingBuffer_Get(_canFrame1, RING_BUFFER_OK)))
+          .WillOnce(Invoke(stub_RingBuffer_Get(_canFrame1, RING_BUFFER_ERROR)));
+
+  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(matchers::BitwiseStructEq(_canFrame0)));
+  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_process(matchers::BitwiseStructEq(_canFrame1)));
+
+  State_init();
+
+  // When
+  State_start(false);
+}
+
+TEST_F(StateTest, State_Start__should_process_can_tx_frames_until_empty) {
+  // Given
+  EXPECT_CALL(*_ringBufferMock, RingBuffer_init(_, _))
+          .WillOnce(Invoke(
+                  [=](auto *rbh, auto *rbInit) {
+                      *rbh = _rbTxH; // tx
+                      return 0;
+                  }))
+          .WillOnce(Invoke(
+                  [=](auto *rbh, auto *rbInit) {
+                      *rbh = _rbRxH; // rx
+                      return 0;
+                  }));
+
+  EXPECT_CALL(*_ringBufferMock, RingBuffer_get(_rbRxH, _))
+          .WillOnce(Invoke(stub_RingBuffer_Get(_canFrame0, RING_BUFFER_ERROR)));
+  EXPECT_CALL(*_ringBufferMock, RingBuffer_get(_rbTxH, _))
+          .Times(3)
+          .WillOnce(Invoke(stub_RingBuffer_Get(_canFrame0, RING_BUFFER_OK)))
+          .WillOnce(Invoke(stub_RingBuffer_Get(_canFrame1, RING_BUFFER_OK)))
+          .WillOnce(Invoke(stub_RingBuffer_Get(_canFrame1, RING_BUFFER_ERROR)));
+
+  EXPECT_CALL(*_canMock, Can_transmit(matchers::BitwiseStructEq(_canFrame0)));
+  EXPECT_CALL(*_canMock, Can_transmit(matchers::BitwiseStructEq(_canFrame1)));
 
   State_init();
 

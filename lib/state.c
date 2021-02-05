@@ -5,6 +5,7 @@
 #include "can.h"
 
 _Noreturn static void State_start_thread(void);
+
 static void State_process(void);
 
 static CanFrame can_rx_buf[STATE_CAN_RX_BUF_SIZE];
@@ -59,8 +60,11 @@ _Noreturn static void State_start_thread(void) {
 
 static void State_process(void) {
   CanFrame frame;
-  while (RingBuffer_get(can_rx_h, &frame) == RING_BUFFER_OK){
+  while (RingBuffer_get(can_rx_h, &frame) == RING_BUFFER_OK) {
     MessageProcessor_process(&frame);
+  }
+  while (RingBuffer_get(can_tx_h, &frame) == RING_BUFFER_OK) {
+    Can_transmit(&frame);
   }
 
 }

@@ -8,7 +8,7 @@ extern "C" {
 
 
 int Can_init(const RingBufferHandler * can_rx_h);
-void Can_receive(CanFrame const * can_frame);
+int Can_transmit(const CanFrame * frame);
 
 
 #ifdef __cplusplus
