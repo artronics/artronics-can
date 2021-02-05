@@ -8,7 +8,7 @@
 class MessageProcessorMock {
 public:
     virtual ~MessageProcessorMock()= default;
-    MOCK_METHOD(int, MessageProcessor_init, (RingBufferHandler rbh));
+    MOCK_METHOD(int, MessageProcessor_init, (const RingBufferHandler * const rbh));
     MOCK_METHOD(void, MessageProcessor_process, (const CanFrame * const frame));
 };
 

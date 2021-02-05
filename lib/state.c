@@ -21,7 +21,7 @@ int State_init(void) {
           .buffer=can_tx_buf,
   };
   RingBuffer_init(&can_tx_h, &rb_tx_init);
-  MessageProcessor_init(can_tx_h);
+  MessageProcessor_init(&can_tx_h);
 
   RingBufferInit rb_init = {
           .size_elem=sizeof(can_rx_buf[0]),

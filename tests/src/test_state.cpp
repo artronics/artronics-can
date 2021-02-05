@@ -43,7 +43,7 @@ TEST_F(StateTest, State_init__should_init_dependencies) {
   RingBufferHandler *rxh = State_GetCanRxBufHandler();
   RingBufferHandler *txh = State_GetCanTxBufHandler();
 
-  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_init(*txh));
+  EXPECT_CALL(*_messageProcessorMock, MessageProcessor_init(txh));
   EXPECT_CALL(*_canMock, Can_init(rxh));
 
   const RingBufferInit expRBRxInit = {

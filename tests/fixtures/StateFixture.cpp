@@ -26,7 +26,7 @@ void MessageProcessor_process(const CanFrame * const frame) {
   return StateFixture::_messageProcessorMock->MessageProcessor_process(frame);
 }
 
-int MessageProcessor_init(RingBufferHandler rbh) {
+int MessageProcessor_init(const RingBufferHandler * const rbh) {
   return StateFixture::_messageProcessorMock->MessageProcessor_init(rbh);
 }
 
