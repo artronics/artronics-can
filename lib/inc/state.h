@@ -13,9 +13,6 @@ extern "C" {
 int State_init(void);
 int State_start(bool isThread);
 
-RingBufferHandler *State_GetCanRxBufHandler(void);
-RingBufferHandler *State_GetCanTxBufHandler(void);
-
 #ifdef __cplusplus
 }
 #endif

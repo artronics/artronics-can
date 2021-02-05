@@ -22,7 +22,7 @@ int State_init(void) {
           .buffer=can_tx_buf,
   };
   RingBuffer_init(&can_tx_h, &rb_tx_init);
-  MessageProcessor_init(&can_tx_h);
+  MessageProcessor_init(can_tx_h);
 
   RingBufferInit rb_init = {
           .size_elem=sizeof(can_rx_buf[0]),
@@ -30,26 +30,21 @@ int State_init(void) {
           .buffer=can_rx_buf,
   };
   RingBuffer_init(&can_rx_h, &rb_init);
-  Can_init(&can_rx_h);
+  Can_init(can_rx_h);
 
   return 0;
 }
 
 int State_start(bool isThread) {
+  // Can't do-while here cause can't use _Noreturn
+  // FIXME: is there a better way to do this? i.e. to make a testable super-loop
+
   if (isThread) {
     State_start_thread();
   } else {
     State_process();
   }
   return 0;
-}
-
-RingBufferHandler *State_GetCanRxBufHandler(void) {
-  return &can_rx_h;
-}
-
-RingBufferHandler *State_GetCanTxBufHandler(void) {
-  return &can_tx_h;
 }
 
 _Noreturn static void State_start_thread(void) {

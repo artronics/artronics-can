@@ -6,8 +6,8 @@ static RingBufferHandler can_tx_h;
 
 void module_id(void);
 
-int MessageProcessor_init(const RingBufferHandler * const _can_tx_h) {
-  can_tx_h = *_can_tx_h;
+int MessageProcessor_init(const RingBufferHandler _can_tx_h) {
+  can_tx_h = _can_tx_h;
   HalModuleId_init();
 
   return 0;

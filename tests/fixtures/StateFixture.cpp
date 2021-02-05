@@ -20,7 +20,7 @@ int RingBuffer_put(RingBufferHandler rbd, const void *data) {
 }
 
 // CanMock
-int Can_init(const RingBufferHandler * const  can_rx_h) {
+int Can_init(const RingBufferHandler can_rx_h) {
   return StateFixture::_canMock->Can_init(can_rx_h);
 }
 
@@ -33,7 +33,7 @@ void MessageProcessor_process(const CanFrame * const frame) {
   return StateFixture::_messageProcessorMock->MessageProcessor_process(frame);
 }
 
-int MessageProcessor_init(const RingBufferHandler * const rbh) {
+int MessageProcessor_init(const RingBufferHandler rbh) {
   return StateFixture::_messageProcessorMock->MessageProcessor_init(rbh);
 }
 

@@ -8,7 +8,7 @@ extern "C" {
 #include "can_frame.h"
 #include "ring_buffer.h"
 
-int MessageProcessor_init(const RingBufferHandler * can_tx_h);
+int MessageProcessor_init(RingBufferHandler can_tx_h);
 void MessageProcessor_process(const CanFrame * frame);
 
 #ifdef __cplusplus

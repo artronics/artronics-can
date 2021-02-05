@@ -2,7 +2,7 @@
 
 static RingBufferHandler can_rx_h;
 
-int Can_init(const RingBufferHandler * const _can_rx_h) {
+int Can_init(const RingBufferHandler _can_rx_h) {
 
   return 0;
 }
