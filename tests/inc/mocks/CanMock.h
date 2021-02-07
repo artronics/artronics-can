@@ -11,6 +11,4 @@ public:
     MOCK_METHOD(int, Can_transmit, (const CanFrame * const frame));
 };
 
-
-
 #endif //ARTRONICS_CANMOCK_H

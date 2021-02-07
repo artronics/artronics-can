@@ -31,13 +31,16 @@ endif()
 
 
 add_executable(ring_buffer_tests src/test_ring_buffer.cpp)
+add_executable(can_tests src/test_can.cpp fixtures/CanFixture.cpp)
 add_executable(state_tests src/test_state.cpp fixtures/StateFixture.cpp)
 add_executable(message_processor_tests src/test_message_processor.cpp fixtures/MessageProcessorFixture.cpp)
 
 target_link_libraries(ring_buffer_tests gtest_main gmock ring_buffer)
+target_link_libraries(can_tests gtest_main gmock can)
 target_link_libraries(state_tests gtest_main gmock state)
 target_link_libraries(message_processor_tests gtest_main gmock message_processor)
 
 add_test(NAME ring_buffer_tests COMMAND ring_buffer)
+add_test(NAME can_tests COMMAND can)
 add_test(NAME state_tests COMMAND state)
 add_test(NAME message_processor_tests COMMAND message_processor)

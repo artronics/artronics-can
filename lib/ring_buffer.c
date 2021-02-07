@@ -35,12 +35,12 @@ int RingBuffer_init(RingBufferHandler *rbd, RingBufferInit *rb_init) {
   return err;
 }
 
-static int RingBuffer_full(struct ring_buffer *rb) {
-  return ((rb->head - rb->tail) == rb->num_elem) ? 1 : 0;
+static int RingBuffer_full(struct ring_buffer *_rb) {
+  return ((_rb->head - _rb->tail) == _rb->num_elem) ? 1 : 0;
 }
 
-static int RingBuffer_empty(struct ring_buffer *rb) {
-  return ((rb->head - rb->tail) == 0U) ? 1 : 0;
+static int RingBuffer_empty(struct ring_buffer *_rb) {
+  return ((_rb->head - _rb->tail) == 0U) ? 1 : 0;
 }
 
 int RingBuffer_put(RingBufferHandler rbd, const void *data) {
