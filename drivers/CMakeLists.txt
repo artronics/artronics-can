@@ -1,7 +1,7 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/CMSIS/Include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Inc)
 
-SET(HAL_SOURCES
+SET(STM32F0XX_HAL_SOURCES
        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.c
        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim_ex.c
        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_uart.c

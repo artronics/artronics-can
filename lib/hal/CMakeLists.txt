@@ -1,4 +1,5 @@
 set(hal_arch stm32f0xx)
+add_subdirectory(drivers)
 
 add_library(hal_can STATIC
         ${hal_arch}/hal_can.c
