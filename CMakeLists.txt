@@ -6,7 +6,7 @@ project(artronics)
 #SET(CMAKE_SYSTEM_VERSION 1)
 SET(CMAKE_C_COMPILER_WORKS 1)
 SET(CMAKE_CXX_COMPILER_WORKS 1)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 
 enable_language(CXX C ASM)
@@ -46,7 +46,7 @@ add_subdirectory(drivers)
 add_subdirectory(lib)
 
 SET(SOURCES
-        ${HAL_SOURCES}
+        ${STM32F0XX_HAL_SOURCES}
         startup_stm32f042x6.s
         src/main.c
         src/main.c
