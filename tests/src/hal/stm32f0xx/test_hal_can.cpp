@@ -14,6 +14,8 @@ FAKE_VOID_FUNC(HAL_NVIC_SetPriority, IRQn_Type, uint32_t, uint32_t);
 FAKE_VOID_FUNC(HAL_NVIC_EnableIRQ, IRQn_Type);
 FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_CAN_Init, CAN_HandleTypeDef *);
 FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_CAN_ConfigFilter, CAN_HandleTypeDef *, CAN_FilterTypeDef *);
+FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_CAN_ActivateNotification, CAN_HandleTypeDef *, uint32_t);
+FAKE_VOID_FUNC(HAL_CAN_IRQHandler, CAN_HandleTypeDef *);
 
 typedef void (*pCallback)(CAN_HandleTypeDef *);
 
@@ -33,6 +35,8 @@ public:
       RESET_FAKE(HAL_CAN_Init)
       RESET_FAKE(HAL_CAN_ConfigFilter)
       RESET_FAKE(HAL_CAN_RegisterCallback)
+      RESET_FAKE(HAL_CAN_ActivateNotification)
+      RESET_FAKE(HAL_CAN_IRQHandler)
       FFF_RESET_HISTORY()
     }
 };
@@ -216,4 +220,16 @@ TEST_F(HalCanTest, HalCan_init__should_get_received_frame_and_convert_it_to_CanF
   auto registeredCb = HAL_CAN_RegisterCallback_fake.arg2_val;
   auto canHandler = HAL_CAN_RegisterCallback_fake.arg0_val;
   registeredCb(canHandler);
+}
+
+TEST_F(HalCanTest, HalCan_init__should_activate_notifications) {
+  // Given
+  HalCanInit canInit;
+
+  // When
+  HalCan_init(&canInit);
+
+  // Then
+  ASSERT_EQ(HAL_CAN_ActivateNotification_fake.call_count, 1);
+  EXPECT_EQ(HAL_CAN_ActivateNotification_fake.arg1_val, CAN_IT_RX_FIFO0_MSG_PENDING);
 }

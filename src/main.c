@@ -2,6 +2,7 @@
 #include "error_handler.h"
 #include "can_t.h"
 #include "ring_buffer.h"
+#include "hal/hal_can.h"
 
 UART_HandleTypeDef huart2;
 CAN_TxHeaderTypeDef pTxHeader;
@@ -36,7 +37,12 @@ int main(void)
   gpioInitTypeDef.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &gpioInitTypeDef);
 
-  init_can();
+  const HalCanInit canInit = {
+
+  };
+  HalCan_init(&canInit);
+//  init_can();
+
   transmit_can();
   RingBufferHandler _rbd;
   RingBufferInit _attr = {

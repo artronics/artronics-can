@@ -65,7 +65,15 @@ int HalCan_init(const HalCanInit *const hal_can_init) {
 
   // Set notifications and register callbacks
   receive_cb = hal_can_init->receive_frame_cb;
-  HAL_CAN_RegisterCallback(&canHandler, HAL_CAN_RX_FIFO0_MSG_PENDING_CB_ID, HAL_CAN_RxFifo0MsgPendingCallback);
+  status = HAL_CAN_RegisterCallback(&canHandler, HAL_CAN_RX_FIFO0_MSG_PENDING_CB_ID, HAL_CAN_RxFifo0MsgPendingCallback);
+  if (status != HAL_OK) {
+    return status;
+  }
+
+  status = HAL_CAN_ActivateNotification(&canHandler, CAN_IT_RX_FIFO0_MSG_PENDING); //enable interrupts
+  if (status != HAL_OK) {
+    return status;
+  }
 
   return 0;
 }

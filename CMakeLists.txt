@@ -87,7 +87,7 @@ target_link_options(${EXECUTABLE} PRIVATE
 target_compile_definitions(ring_buffer PRIVATE
         -DRING_BUFFER_MAX=8
         )
-target_link_libraries(${EXECUTABLE} PUBLIC common ring_buffer)
+target_link_libraries(${EXECUTABLE} PUBLIC common PUBLIC ring_buffer PRIVATE hal_can)
 
 add_custom_command(TARGET ${EXECUTABLE}
         POST_BUILD
