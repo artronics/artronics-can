@@ -4,6 +4,7 @@ add_library(hal_can STATIC
 target_compile_definitions(hal_can PRIVATE
         -DUSE_HAL_DRIVER
         -DSTM32F042x6
+        -DUSE_HAL_CAN_REGISTER_CALLBACKS=1
 )
 
 target_link_libraries(hal_can PRIVATE common)

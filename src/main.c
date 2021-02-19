@@ -76,7 +76,7 @@ static void transmit_can(void) {
   pTxHeader.IDE = CAN_ID_STD;
 
   uint8_t data[] = {123};
-  send_can_data(&pTxHeader, data);
+//  send_can_data(&pTxHeader, data);
 }
 /**
   * @brief System Clock Configuration

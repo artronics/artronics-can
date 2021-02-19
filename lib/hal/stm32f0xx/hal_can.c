@@ -21,7 +21,9 @@ static CAN_HandleTypeDef canHandler = {
         }
 };
 
-static int (*receive_cb)(const CanFrame * frame);
+static int (*receive_cb)(const CanFrame *frame);
+
+void get_can_frame(int mailboxIndex, CanFrame *f);
 
 int HalCan_init(const HalCanInit *const hal_can_init) {
   // Init GPIOs
@@ -75,13 +77,32 @@ int HalCan_init(const HalCanInit *const hal_can_init) {
     return status;
   }
 
-  return 0;
+  // Start CAN
+  status = HAL_CAN_Start(&canHandler);
+
+  return status;
 }
 
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
-{
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
+  UNUSED(hcan);
   CanFrame f;
+  get_can_frame(0, &f);
   receive_cb(&f);
+}
+
+void get_can_frame(int mailboxIndex, CanFrame *f) {
+  CAN_FIFOMailBox_TypeDef mailbox = CAN->sFIFOMailBox[mailboxIndex];
+
+  f->is_extended = mailbox.RIR & CAN_RI0R_IDE;
+  f->is_remote = mailbox.RIR & CAN_RI0R_RTR;
+  f->id = f->is_extended ? mailbox.RIR >> CAN_RI0R_EXID_Pos : mailbox.RIR >> CAN_RI0R_STID_Pos;
+  f->data_size = (mailbox.RDTR & CAN_RDT0R_DLC) >> CAN_RDT0R_DLC_Pos;
+  for (int i = 0; i < 4; i++) {
+    f->data[i] = (mailbox.RDLR >> i * 8) & 0xFF;
+  }
+  for (int i = 4; i < 8; i++) {
+    f->data[i] = (mailbox.RDHR >> i * 8) & 0xFF;
+  }
 }
 
 int HalCan_transmit(const CanFrame *frame) {
