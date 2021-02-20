@@ -16,10 +16,13 @@ FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_CAN_Init, CAN_HandleTypeDef *);
 FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_CAN_ConfigFilter, CAN_HandleTypeDef *, CAN_FilterTypeDef *);
 FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_CAN_ActivateNotification, CAN_HandleTypeDef *, uint32_t);
 FAKE_VOID_FUNC(HAL_CAN_IRQHandler, CAN_HandleTypeDef *);
+FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_CAN_Start, CAN_HandleTypeDef *);
 
 typedef void (*pCallback)(CAN_HandleTypeDef *);
 
-FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_CAN_RegisterCallback, CAN_HandleTypeDef *, HAL_CAN_CallbackIDTypeDef, pCallback)
+FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_CAN_RegisterCallback, CAN_HandleTypeDef *, HAL_CAN_CallbackIDTypeDef, pCallback);
+FAKE_VALUE_FUNC(HAL_StatusTypeDef, HAL_CAN_GetRxMessage, CAN_HandleTypeDef *, uint32_t, CAN_RxHeaderTypeDef *,
+                uint8_t *);
 
 using namespace testing;
 using namespace test_utils::stub;
@@ -37,6 +40,8 @@ public:
       RESET_FAKE(HAL_CAN_RegisterCallback)
       RESET_FAKE(HAL_CAN_ActivateNotification)
       RESET_FAKE(HAL_CAN_IRQHandler)
+      RESET_FAKE(HAL_CAN_Start)
+      RESET_FAKE(HAL_CAN_GetRxMessage)
       FFF_RESET_HISTORY()
     }
 };
@@ -107,7 +112,7 @@ TEST_F(HalCanTest, HalCan_init__should_init_CAN_HAL_CAN_Init) {
 
   // Then
   ASSERT_EQ(HAL_CAN_Init_fake.call_count, 1);
-  EXPECT_EQ(actCanHandle.Instance, CAN);
+//  EXPECT_EQ(actCanHandle.Instance, CAN);
   auto init = actCanHandle.Init;
   EXPECT_EQ(init.Prescaler, 12);
   EXPECT_EQ(init.Mode, CAN_MODE_NORMAL);
@@ -186,8 +191,8 @@ TEST_F(HalCanTest, HalCan_init__should_call_callback_upon_receiving_rx_frame) {
   auto cbHasBeenCalled = false;
   const HalCanInit canInit{
           .receive_frame_cb = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
-            cbHasBeenCalled = true;
-            return 0;
+              cbHasBeenCalled = true;
+              return 0;
           })
   };
 
@@ -232,4 +237,87 @@ TEST_F(HalCanTest, HalCan_init__should_activate_notifications) {
   // Then
   ASSERT_EQ(HAL_CAN_ActivateNotification_fake.call_count, 1);
   EXPECT_EQ(HAL_CAN_ActivateNotification_fake.arg1_val, CAN_IT_RX_FIFO0_MSG_PENDING);
+}
+
+TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_1) {
+  CanFrame convertedFrame;
+  const HalCanInit canInit{
+          .receive_frame_cb = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
+              convertedFrame = *frame;
+              return 0;
+          })
+  };
+  auto expDataSize = 3;
+  auto expIsRemote = 0; // expected to be converted to false
+  auto expIsStdId = 0; // IDE value; 0 means standard id
+  auto standardId = 123;
+  auto HAL_CAN_GetRxMessage_stub = lambdaToFunPointer(
+          [&](CAN_HandleTypeDef *hcan, uint32_t RxFifo, CAN_RxHeaderTypeDef *pHeader,
+              uint8_t aData[]) -> HAL_StatusTypeDef {
+              for (auto i = 0; i < 8; i++) {
+                aData[i] = i;
+              }
+              pHeader->DLC = expDataSize;
+              pHeader->RTR = expIsRemote;
+              pHeader->IDE = expIsStdId;
+              pHeader->StdId = standardId;
+              pHeader->ExtId = standardId + 1000; // just make sure ext != std
+
+              return HAL_OK;
+          });
+  HAL_CAN_GetRxMessage_fake.custom_fake = HAL_CAN_GetRxMessage_stub;
+
+  // When
+  HalCan_init(&canInit);
+
+  // Then
+  auto registeredCb = HAL_CAN_RegisterCallback_fake.arg2_val;
+  auto canHandler = HAL_CAN_RegisterCallback_fake.arg0_val;
+  registeredCb(canHandler);
+
+  ASSERT_EQ(HAL_CAN_GetRxMessage_fake.call_count, 1);
+  EXPECT_EQ(HAL_CAN_GetRxMessage_fake.arg1_val, CAN_RX_FIFO0);
+  for (auto i = 0; i < 8; i++) {
+    EXPECT_EQ(convertedFrame.data[i], i);
+  }
+  EXPECT_EQ(convertedFrame.data_size, expDataSize);
+  EXPECT_EQ(convertedFrame.is_remote, expIsRemote);
+  EXPECT_EQ(convertedFrame.is_extended, expIsStdId);
+  EXPECT_EQ(convertedFrame.id, standardId);
+}
+
+TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_2) {
+  CanFrame convertedFrame;
+  const HalCanInit canInit{
+          .receive_frame_cb = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
+              convertedFrame = *frame;
+              return 0;
+          })
+  };
+  auto expIsRemote = 1; // expected to be converted to true
+  auto expIsStdId = 1; // IDE value; 1 means extended id
+  auto extendedId = 123;
+  auto HAL_CAN_GetRxMessage_stub = lambdaToFunPointer(
+          [&](CAN_HandleTypeDef *hcan, uint32_t RxFifo, CAN_RxHeaderTypeDef *pHeader,
+              uint8_t aData[]) -> HAL_StatusTypeDef {
+              pHeader->RTR = expIsRemote;
+              pHeader->IDE = expIsStdId;
+              pHeader->StdId = extendedId -20; // just make sure ext != std
+              pHeader->ExtId = extendedId;
+
+              return HAL_OK;
+          });
+  HAL_CAN_GetRxMessage_fake.custom_fake = HAL_CAN_GetRxMessage_stub;
+
+  // When
+  HalCan_init(&canInit);
+
+  // Then
+  auto registeredCb = HAL_CAN_RegisterCallback_fake.arg2_val;
+  auto canHandler = HAL_CAN_RegisterCallback_fake.arg0_val;
+  registeredCb(canHandler);
+
+  EXPECT_EQ(convertedFrame.is_remote, expIsRemote);
+  EXPECT_EQ(convertedFrame.is_extended, expIsStdId);
+  EXPECT_EQ(convertedFrame.id, extendedId);
 }
