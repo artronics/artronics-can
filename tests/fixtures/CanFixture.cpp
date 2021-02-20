@@ -3,8 +3,8 @@
 std::unique_ptr<HalCanMock> CanFixture::_halCanMock;
 std::unique_ptr<RingBufferMock> CanFixture::_ringBufferMock;
 
-int HalCan_init(const HalCanInit * const hal_can_init) {
-  return CanFixture::_halCanMock->HalCan_init(hal_can_init);
+int HalCan_init(const HalCanInit * const halCanInit) {
+  return CanFixture::_halCanMock->HalCan_init(halCanInit);
 }
 
 int HalCan_transmit(const CanFrame * const frame) {

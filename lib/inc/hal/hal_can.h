@@ -9,11 +9,11 @@ extern "C" {
 typedef int (*ReceiveFrameCb)(const CanFrame * const frame);
 
 typedef struct HalCanInit {
-    ReceiveFrameCb receive_frame_cb;
+    ReceiveFrameCb receivedFrameCallback;
 
 } HalCanInit;
 
-int HalCan_init(const HalCanInit *hal_can_init);
+int HalCan_init(const HalCanInit *halCanInit);
 int HalCan_transmit(const CanFrame *frame);
 
 #ifdef __cplusplus

@@ -92,12 +92,6 @@ TEST_F(HalCanTest, HalCan_init__should_init_CAN_set_IRQs) {
 TEST_F(HalCanTest, HalCan_init__should_init_CAN_HAL_CAN_Init) {
   // Given
   CAN_HandleTypeDef actCanHandle;
-//  auto HAL_CAN_Init_stub = [&](HAL_StatusTypeDef returnVal) {
-//      return lambdaToFunPointer([&](CAN_HandleTypeDef *handle) -> HAL_StatusTypeDef {
-//          actCanHandle = *handle;
-//          return returnVal;
-//      });
-//  };
   auto HAL_CAN_Init_stub = lambdaToFunPointer([&](CAN_HandleTypeDef *handle) -> HAL_StatusTypeDef {
       actCanHandle = *handle;
       return HAL_OK;
@@ -190,7 +184,7 @@ TEST_F(HalCanTest, HalCan_init__should_call_callback_upon_receiving_rx_frame) {
   // Given
   auto cbHasBeenCalled = false;
   const HalCanInit canInit{
-          .receive_frame_cb = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
+          .receivedFrameCallback = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
               cbHasBeenCalled = true;
               return 0;
           })
@@ -212,7 +206,7 @@ TEST_F(HalCanTest, HalCan_init__should_get_received_frame_and_convert_it_to_CanF
   // Given
   CanFrame convertedFrame;
   const HalCanInit canInit{
-          .receive_frame_cb = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
+          .receivedFrameCallback = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
               convertedFrame = *frame;
               return 0;
           })
@@ -242,7 +236,7 @@ TEST_F(HalCanTest, HalCan_init__should_activate_notifications) {
 TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_1) {
   CanFrame convertedFrame;
   const HalCanInit canInit{
-          .receive_frame_cb = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
+          .receivedFrameCallback = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
               convertedFrame = *frame;
               return 0;
           })
@@ -289,7 +283,7 @@ TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_1) {
 TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_2) {
   CanFrame convertedFrame;
   const HalCanInit canInit{
-          .receive_frame_cb = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
+          .receivedFrameCallback = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
               convertedFrame = *frame;
               return 0;
           })

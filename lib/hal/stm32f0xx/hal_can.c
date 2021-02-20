@@ -21,9 +21,9 @@ static CAN_HandleTypeDef canHandler = {
         }
 };
 
-static int (*receive_cb)(const CanFrame *frame);
+static int (*receivedFrameCallback)(const CanFrame *frame);
 
-int HalCan_init(const HalCanInit *const hal_can_init) {
+int HalCan_init(const HalCanInit *const halCanInit) {
   // Init GPIOs
   GPIO_InitTypeDef gpioInit = {0};
   gpioInit.Pin = GPIO_PIN_11 | GPIO_PIN_12;
@@ -64,7 +64,7 @@ int HalCan_init(const HalCanInit *const hal_can_init) {
   }
 
   // Set notifications and register callbacks
-  receive_cb = hal_can_init->receive_frame_cb;
+  receivedFrameCallback = halCanInit->receivedFrameCallback;
   status = HAL_CAN_RegisterCallback(&canHandler, HAL_CAN_RX_FIFO0_MSG_PENDING_CB_ID, HAL_CAN_RxFifo0MsgPendingCallback);
   if (status != HAL_OK) {
     return status;
@@ -93,7 +93,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
   f.data_size = pHeader.DLC;
   f.id = f.is_extended ? pHeader.ExtId : pHeader.StdId;
 
-  receive_cb(&f);
+  receivedFrameCallback(&f);
 }
 
 int HalCan_transmit(const CanFrame *frame) {

@@ -7,7 +7,7 @@ extern "C" {
 #include "ring_buffer.h"
 
 
-int Can_init(RingBufferHandler can_rx_h);
+int Can_init(RingBufferHandler _canRxH);
 int Can_transmit(const CanFrame * frame);
 
 

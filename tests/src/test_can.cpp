@@ -11,7 +11,7 @@ public:
     ~CanTest() override = default;
 
 protected:
-    static constexpr RingBufferHandler _can_rx_h = 12;
+    static constexpr RingBufferHandler _canRxBufHandler = 12;
 };
 
 
@@ -30,7 +30,7 @@ TEST_F(CanTest, Can_init__should_init_dependencies) {
   Can_init(1);
 
   // Then
-  EXPECT_TRUE(actHalCanInit.receive_frame_cb != nullptr);
+  EXPECT_TRUE(actHalCanInit.receivedFrameCallback != nullptr);
 }
 
 TEST_F(CanTest, Can_transmit__should_send_tx_frame) {
@@ -53,11 +53,11 @@ TEST_F(CanTest, Can_receive_cb__should_put_received_frame_into_buffer) {
                   }
           ));
 
-  Can_init(_can_rx_h);
+  Can_init(_canRxBufHandler);
 
   const CanFrame frame = {};
-  EXPECT_CALL(*_ringBufferMock, RingBuffer_put(_can_rx_h, &frame));
+  EXPECT_CALL(*_ringBufferMock, RingBuffer_put(_canRxBufHandler, &frame));
 
   // When
-  actHalCanInit.receive_frame_cb(&frame);
+  actHalCanInit.receivedFrameCallback(&frame);
 }
