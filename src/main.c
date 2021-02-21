@@ -14,6 +14,11 @@ static void MX_USART2_UART_Init(void);
 static void transmit_can(void);
 
 static char buf[4] = {0};
+int receivedFrameCallback(const CanFrame *frame);
+int receivedFrameCallback(const CanFrame *frame) {
+  __ASM("nop");
+  return 0;
+}
 
 int main(void)
 {
@@ -38,7 +43,7 @@ int main(void)
   HAL_GPIO_Init(GPIOB, &gpioInitTypeDef);
 
   const HalCanInit canInit = {
-
+          .receivedFrameCallback = receivedFrameCallback,
   };
   HalCan_init(&canInit);
 //  init_can();

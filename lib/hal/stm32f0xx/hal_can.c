@@ -23,6 +23,8 @@ static CAN_HandleTypeDef canHandler = {
 
 static int (*receivedFrameCallback)(const CanFrame *frame);
 
+void getFrameAndCallCallback(CAN_HandleTypeDef *hcan, uint32_t rxFifo, CAN_RxHeaderTypeDef *pHeader, CanFrame *f);
+
 int HalCan_init(const HalCanInit *const halCanInit) {
   // Init GPIOs
   GPIO_InitTypeDef gpioInit = {0};
@@ -65,12 +67,21 @@ int HalCan_init(const HalCanInit *const halCanInit) {
 
   // Set notifications and register callbacks
   receivedFrameCallback = halCanInit->receivedFrameCallback;
+
   status = HAL_CAN_RegisterCallback(&canHandler, HAL_CAN_RX_FIFO0_MSG_PENDING_CB_ID, HAL_CAN_RxFifo0MsgPendingCallback);
+  if (status != HAL_OK) {
+    return status;
+  }
+  status = HAL_CAN_RegisterCallback(&canHandler, HAL_CAN_RX_FIFO1_MSG_PENDING_CB_ID, HAL_CAN_RxFifo1MsgPendingCallback);
   if (status != HAL_OK) {
     return status;
   }
 
   status = HAL_CAN_ActivateNotification(&canHandler, CAN_IT_RX_FIFO0_MSG_PENDING); //enable interrupts
+  if (status != HAL_OK) {
+    return status;
+  }
+  status = HAL_CAN_ActivateNotification(&canHandler, CAN_IT_RX_FIFO1_MSG_PENDING); //enable interrupts
   if (status != HAL_OK) {
     return status;
   }
@@ -84,19 +95,35 @@ int HalCan_init(const HalCanInit *const halCanInit) {
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
   CanFrame f;
   CAN_RxHeaderTypeDef pHeader;
-  HAL_StatusTypeDef status = HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &pHeader, f.data);
+  getFrameAndCallCallback(hcan, CAN_RX_FIFO0, &pHeader, &f);
+}
+
+void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
+  CanFrame f;
+  CAN_RxHeaderTypeDef pHeader;
+  getFrameAndCallCallback(hcan, CAN_RX_FIFO1, &pHeader, &f);
+}
+
+void getFrameAndCallCallback(CAN_HandleTypeDef *hcan, uint32_t rxFifo, CAN_RxHeaderTypeDef *const pHeader, CanFrame *const f) {
+
+  HAL_StatusTypeDef status = HAL_CAN_GetRxMessage(hcan, rxFifo, pHeader, f->data);
   if (status != HAL_OK) {
     // TODO: handle error
   }
-  f.is_extended = pHeader.IDE;
-  f.is_remote = pHeader.RTR;
-  f.data_size = pHeader.DLC;
-  f.id = f.is_extended ? pHeader.ExtId : pHeader.StdId;
+  f->is_extended = pHeader->IDE;
+  f->is_remote = pHeader->RTR;
+  f->data_size = pHeader->DLC;
+  f->id = f->is_extended ? pHeader->ExtId : pHeader->StdId;
 
-  receivedFrameCallback(&f);
+  receivedFrameCallback(f);
 }
 
-int HalCan_transmit(const CanFrame *frame) {
+int HalCan_transmit(const CanFrame * const frame) {
+  uint32_t mailbox = 0xFF;
+  CAN_TxHeaderTypeDef pHeader;
+
+  HAL_CAN_AddTxMessage(&canHandler, &pHeader, frame->data, &mailbox);
+
   return 0;
 }
 
