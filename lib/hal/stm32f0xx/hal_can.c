@@ -23,7 +23,7 @@ static CAN_HandleTypeDef canHandler = {
 
 static int (*receivedFrameCallback)(const CanFrame *frame);
 
-void getFrameAndCallCallback(CAN_HandleTypeDef *hcan, uint32_t rxFifo, CAN_RxHeaderTypeDef *pHeader, CanFrame *f);
+void getFrameAndCallCallback(CAN_HandleTypeDef *hcan, uint32_t rxFifo, CAN_RxHeaderTypeDef *pHeader, CanFrame *frame);
 
 int HalCan_init(const HalCanInit *const halCanInit) {
   // Init GPIOs
@@ -104,27 +104,36 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan) {
   getFrameAndCallCallback(hcan, CAN_RX_FIFO1, &pHeader, &f);
 }
 
-void getFrameAndCallCallback(CAN_HandleTypeDef *hcan, uint32_t rxFifo, CAN_RxHeaderTypeDef *const pHeader, CanFrame *const f) {
+void getFrameAndCallCallback(CAN_HandleTypeDef *hcan, uint32_t rxFifo, CAN_RxHeaderTypeDef *const pHeader, CanFrame *const frame) {
 
-  HAL_StatusTypeDef status = HAL_CAN_GetRxMessage(hcan, rxFifo, pHeader, f->data);
+  HAL_StatusTypeDef status = HAL_CAN_GetRxMessage(hcan, rxFifo, pHeader, frame->data);
   if (status != HAL_OK) {
     // TODO: handle error
   }
-  f->is_extended = pHeader->IDE;
-  f->is_remote = pHeader->RTR;
-  f->data_size = pHeader->DLC;
-  f->id = f->is_extended ? pHeader->ExtId : pHeader->StdId;
+  frame->is_extended = pHeader->IDE;
+  frame->is_remote = pHeader->RTR;
+  frame->data_size = pHeader->DLC;
+  frame->id = frame->is_extended ? pHeader->ExtId : pHeader->StdId;
 
-  receivedFrameCallback(f);
+  receivedFrameCallback(frame);
 }
 
 int HalCan_transmit(const CanFrame * const frame) {
   uint32_t mailbox = 0xFF;
   CAN_TxHeaderTypeDef pHeader;
 
-  HAL_CAN_AddTxMessage(&canHandler, &pHeader, frame->data, &mailbox);
+  pHeader.IDE = frame->is_extended;
+  pHeader.RTR = frame->is_remote;
+  pHeader.DLC = frame->data_size;
+  if (frame->is_extended) {
+    pHeader.ExtId = frame->id;
+  } else {
+    pHeader.StdId = frame->id;
+  }
 
-  return 0;
+  HAL_StatusTypeDef status = HAL_CAN_AddTxMessage(&canHandler, &pHeader, (uint8_t *)frame->data, &mailbox);
+
+  return status;
 }
 
 // The callback function doesn't get called because for some reason HAL doesn't have a handler
