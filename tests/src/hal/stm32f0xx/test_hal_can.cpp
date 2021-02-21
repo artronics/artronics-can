@@ -182,69 +182,6 @@ TEST_F(HalCanTest, HalCan_init__should_register_rx_callback) {
   EXPECT_TRUE(cb1 != cb0);
 }
 
-TEST_F(HalCanTest, HalCan_init__should_call_callback_upon_receiving_rx_frame_from_fifo0) {
-  // Given
-  auto cbHasBeenCalled = false;
-  const HalCanInit canInit{
-          .receivedFrameCallback = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
-              cbHasBeenCalled = true;
-              return 0;
-          })
-  };
-
-  // When
-  HalCan_init(&canInit);
-
-  // Then
-  // We call the callback that we registered with HAL. This callback should call the "receive callback" that it received from init
-  auto registeredCb = HAL_CAN_RegisterCallback_fake.arg2_history[0];
-  auto canHandler = HAL_CAN_RegisterCallback_fake.arg0_history[0];
-  registeredCb(canHandler);
-
-  ASSERT_TRUE(cbHasBeenCalled);
-}
-
-TEST_F(HalCanTest, HalCan_init__should_call_callback_upon_receiving_rx_frame_from_fifo1) {
-  // Given
-  auto cbHasBeenCalled = false;
-  const HalCanInit canInit{
-          .receivedFrameCallback = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
-              cbHasBeenCalled = true;
-              return 0;
-          })
-  };
-
-  // When
-  HalCan_init(&canInit);
-
-  // Then
-  // We call the callback that we registered with HAL. This callback should call the "receive callback" that it received from init
-  auto registeredCb = HAL_CAN_RegisterCallback_fake.arg2_history[1];
-  auto canHandler = HAL_CAN_RegisterCallback_fake.arg0_history[1];
-  registeredCb(canHandler);
-
-  ASSERT_TRUE(cbHasBeenCalled);
-}
-
-TEST_F(HalCanTest, HalCan_init__should_get_received_frame_and_convert_it_to_CanFrame_and_call_callback) {
-  // Given
-  CanFrame convertedFrame;
-  const HalCanInit canInit{
-          .receivedFrameCallback = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
-              convertedFrame = *frame;
-              return 0;
-          })
-  };
-
-  // When
-  HalCan_init(&canInit);
-
-  // Then
-  auto registeredCb = HAL_CAN_RegisterCallback_fake.arg2_val;
-  auto canHandler = HAL_CAN_RegisterCallback_fake.arg0_val;
-  registeredCb(canHandler);
-}
-
 TEST_F(HalCanTest, HalCan_init__should_activate_notifications) {
   // Given
   HalCanInit canInit;
@@ -305,6 +242,42 @@ TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_fifo0_1)
   EXPECT_EQ(convertedFrame.id, standardId);
 }
 
+TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_fifo0_2) {
+  CanFrame convertedFrame;
+  const HalCanInit canInit{
+          .receivedFrameCallback = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
+              convertedFrame = *frame;
+              return 0;
+          })
+  };
+  auto expIsRemote = 1; // expected to be converted to true
+  auto expIsStdId = 1; // IDE value; 1 means extended id
+  auto extendedId = 123;
+  auto HAL_CAN_GetRxMessage_stub = lambdaToFunPointer(
+          [&](CAN_HandleTypeDef *hcan, uint32_t RxFifo, CAN_RxHeaderTypeDef *pHeader,
+              uint8_t aData[]) -> HAL_StatusTypeDef {
+              pHeader->RTR = expIsRemote;
+              pHeader->IDE = expIsStdId;
+              pHeader->StdId = extendedId - 20; // just make sure ext != std
+              pHeader->ExtId = extendedId;
+
+              return HAL_OK;
+          });
+  HAL_CAN_GetRxMessage_fake.custom_fake = HAL_CAN_GetRxMessage_stub;
+
+  // When
+  HalCan_init(&canInit);
+
+  // Then
+  auto registeredCb = HAL_CAN_RegisterCallback_fake.arg2_history[0];
+  auto canHandler = HAL_CAN_RegisterCallback_fake.arg0_history[0];
+  registeredCb(canHandler);
+
+  EXPECT_EQ(convertedFrame.is_remote, expIsRemote);
+  EXPECT_EQ(convertedFrame.is_extended, expIsStdId);
+  EXPECT_EQ(convertedFrame.id, extendedId);
+}
+
 TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_fifo1_1) {
   CanFrame convertedFrame;
   const HalCanInit canInit{
@@ -350,42 +323,6 @@ TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_fifo1_1)
   EXPECT_EQ(convertedFrame.is_remote, expIsRemote);
   EXPECT_EQ(convertedFrame.is_extended, expIsStdId);
   EXPECT_EQ(convertedFrame.id, standardId);
-}
-
-TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_fifo0_2) {
-  CanFrame convertedFrame;
-  const HalCanInit canInit{
-          .receivedFrameCallback = lambdaToFunPointer([&](const CanFrame *const frame) -> int {
-              convertedFrame = *frame;
-              return 0;
-          })
-  };
-  auto expIsRemote = 1; // expected to be converted to true
-  auto expIsStdId = 1; // IDE value; 1 means extended id
-  auto extendedId = 123;
-  auto HAL_CAN_GetRxMessage_stub = lambdaToFunPointer(
-          [&](CAN_HandleTypeDef *hcan, uint32_t RxFifo, CAN_RxHeaderTypeDef *pHeader,
-              uint8_t aData[]) -> HAL_StatusTypeDef {
-              pHeader->RTR = expIsRemote;
-              pHeader->IDE = expIsStdId;
-              pHeader->StdId = extendedId - 20; // just make sure ext != std
-              pHeader->ExtId = extendedId;
-
-              return HAL_OK;
-          });
-  HAL_CAN_GetRxMessage_fake.custom_fake = HAL_CAN_GetRxMessage_stub;
-
-  // When
-  HalCan_init(&canInit);
-
-  // Then
-  auto registeredCb = HAL_CAN_RegisterCallback_fake.arg2_history[0];
-  auto canHandler = HAL_CAN_RegisterCallback_fake.arg0_history[0];
-  registeredCb(canHandler);
-
-  EXPECT_EQ(convertedFrame.is_remote, expIsRemote);
-  EXPECT_EQ(convertedFrame.is_extended, expIsStdId);
-  EXPECT_EQ(convertedFrame.id, extendedId);
 }
 
 TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_fifo1_2) {
