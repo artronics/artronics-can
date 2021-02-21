@@ -363,17 +363,33 @@ TEST_F(HalCanTest, HalCan_init__should_read_rx_fifo_and_create_CanFrame_fifo1_2)
 
 TEST_F(HalCanTest, HalCan_transmit__should_transmit_frame) {
   // Given
-  CanFrame f = {};
+  CanFrame f = {.data = {0}};
+
+  uint8_t *expData = f.data;
+  uint8_t *actData = nullptr;
+  uint32_t *acPTxMailbox = nullptr;
+  CAN_HandleTypeDef  *actCanHandler = nullptr;
+  CAN_TxHeaderTypeDef actHeader;
 
   auto HAL_CAN_AddTxMessage_stub = lambdaToFunPointer(
           [&](CAN_HandleTypeDef *hcan, CAN_TxHeaderTypeDef *pHeader, uint8_t aData[], uint32_t *pTxMailbox) -> HAL_StatusTypeDef {
+              actData = aData;
+              acPTxMailbox = pTxMailbox;
+              actCanHandler = hcan;
+              actHeader = *pHeader;
 
               return HAL_OK;
           });
   HAL_CAN_AddTxMessage_fake.custom_fake = HAL_CAN_AddTxMessage_stub;
+
   // When
   HalCan_transmit(&f);
 
   // Then
   ASSERT_EQ(HAL_CAN_AddTxMessage_fake.call_count, 1);
+  EXPECT_TRUE(actData != nullptr);
+  EXPECT_EQ(expData, actData);
+  EXPECT_TRUE(acPTxMailbox != nullptr);
+  EXPECT_TRUE(acPTxMailbox != nullptr);
+  EXPECT_TRUE(actCanHandler != nullptr);
 }
