@@ -12,4 +12,9 @@ target_link_libraries(hal_can PRIVATE common)
 add_library(hal_module_id STATIC
         hal_module_id.c
         )
+target_compile_definitions(hal_module_id PRIVATE
+#        -DUSE_HAL_DRIVER
+        -DSTM32F042x6
+#        -DUSE_HAL_CAN_REGISTER_CALLBACKS=1
+        )
 target_link_libraries(hal_module_id PRIVATE common)
