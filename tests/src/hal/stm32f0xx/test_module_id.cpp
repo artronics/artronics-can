@@ -22,7 +22,7 @@ protected:
     }
 };
 
-TEST_F(ModuleIdTest, HalModuleId__should_get_UID_after_init) {
+TEST_F(ModuleIdTest, HalModuleId_init__should_get_UID_after_init) {
   // When
   auto status = HalModuleId_init();
 
@@ -32,7 +32,7 @@ TEST_F(ModuleIdTest, HalModuleId__should_get_UID_after_init) {
   ASSERT_EQ(HAL_GetUIDw1_fake.call_count, 1);
 }
 
-TEST_F(ModuleIdTest, HalModuleId__should_get_moduleId_64bit) {
+TEST_F(ModuleIdTest, HalModuleId_get64BitId__should_get_moduleId_64bit) {
   // Give
   HAL_GetUIDw0_fake.return_val = 0x11223344;
   HAL_GetUIDw1_fake.return_val = 0x55667788;

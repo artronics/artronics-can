@@ -17,7 +17,7 @@ namespace test_utils {
 
         template<typename T>
         auto bitwise_equal(const T &lhs, const T &rhs) {
-          return std::equal(begin(lhs), end(lhs), // will become constexpr with C++20
+          return std::equal(begin(lhs), end(lhs),
                             begin(rhs), end(rhs));
         }
 

@@ -8,7 +8,7 @@ void module_id(void);
 
 int MessageProcessor_init(const RingBufferHandler _can_tx_h) {
   can_tx_h = _can_tx_h;
-  HalModuleId_init();
+  HalModuleId_init(); // TODO: error handling :/
 
   return 0;
 }
