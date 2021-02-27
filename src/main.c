@@ -1,27 +1,14 @@
 #include "main.h"
 #include "error_handler.h"
-#include "can_t.h"
-#include "ring_buffer.h"
-#include "hal/hal_can.h"
+#include "state.h"
 
 UART_HandleTypeDef huart2;
-CAN_TxHeaderTypeDef pTxHeader;
-
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
-static void transmit_can(void);
 
-static char buf[4] = {0};
-int receivedFrameCallback(const CanFrame *frame);
-int receivedFrameCallback(const CanFrame *frame) {
-  __ASM("nop");
-  return 0;
-}
-
-int main(void)
-{
+int main(void) {
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
@@ -42,47 +29,10 @@ int main(void)
   gpioInitTypeDef.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &gpioInitTypeDef);
 
-  const HalCanInit canInit = {
-          .receivedFrameCallback = receivedFrameCallback,
-  };
-  HalCan_init(&canInit);
-//  init_can();
-
-  transmit_can();
-  RingBufferHandler _rbd;
-  RingBufferInit _attr = {
-          .size_elem=sizeof(buf[0]),
-          .num_elem=4,
-          .buffer=buf,
-  };
-  RingBuffer_init(&_rbd, &_attr);
-  int err = RingBuffer_init(&_rbd, &_attr);
-  if (err == -1) {
-    __ASM("nop");
-  }
-
-
-  while (1)
-  {
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-//    volatile uint32_t i = 1000000;
-//    while (i) i--;
-    HAL_Delay(1000);
-
-  }
-  /* USER CODE END 3 */
+  State_init();
+  State_start(true);
 }
 
-static void transmit_can(void) {
-  pTxHeader.StdId = 0b10101010101;
-  pTxHeader.ExtId = 0;
-  pTxHeader.DLC = 1;
-  pTxHeader.RTR = CAN_RTR_DATA;
-  pTxHeader.IDE = CAN_ID_STD;
-
-  uint8_t data[] = {123};
-//  send_can_data(&pTxHeader, data);
-}
 /**
   * @brief System Clock Configuration
   * @retval None

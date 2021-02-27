@@ -50,7 +50,6 @@ SET(SOURCES
         startup_stm32f042x6.s
         src/main.c
         src/main.c
-#        src/can_t.c
         src/error_handler.c
         src/stm32f0xx_hal_msp.c
         src/stm32f0xx_it.c
@@ -87,7 +86,9 @@ target_link_options(${EXECUTABLE} PRIVATE
 target_compile_definitions(ring_buffer PRIVATE
         -DRING_BUFFER_MAX=8
         )
-target_link_libraries(${EXECUTABLE} PUBLIC common PUBLIC ring_buffer PRIVATE hal_can)
+target_link_libraries(${EXECUTABLE} PUBLIC common
+        PRIVATE art
+        )
 
 add_custom_command(TARGET ${EXECUTABLE}
         POST_BUILD

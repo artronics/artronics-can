@@ -29,7 +29,6 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
     include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-
 add_executable(ring_buffer_tests src/test_ring_buffer.cpp)
 add_executable(can_tests src/test_can.cpp fixtures/CanFixture.cpp)
 add_executable(state_tests src/test_state.cpp fixtures/StateFixture.cpp)
