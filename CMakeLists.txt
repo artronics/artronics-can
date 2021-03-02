@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
 project(artronics)
 
@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 
 enable_language(CXX C ASM)
+enable_testing()
 
 include_directories(
         inc
@@ -31,6 +32,17 @@ set(compile_options
 
         -Wall
         $<$<CONFIG:Debug>:-Og> # FIXME: It looks like this doesn't work
+        )
+set(link_options
+        -T${CMAKE_SOURCE_DIR}/STM32F042K6Tx_FLASH.ld
+        -mcpu=cortex-m0
+        -mthumb
+        -specs=nano.specs
+        -lc
+        -lm
+        -lnosys
+        -Wl,-Map=${PROJECT_NAME}.map,--cref
+        -Wl,--gc-sections
         )
 
 add_subdirectory(tests)
@@ -56,10 +68,8 @@ SET(SOURCES
         src/system_stm32f0xx.c
         )
 
+option(TEST OFF)
 add_library(common INTERFACE)
-target_compile_options(common INTERFACE
-        ${compile_options}
-        )
 
 set(EXECUTABLE ${PROJECT_NAME}.out)
 add_executable(${EXECUTABLE} ${SOURCES})
@@ -67,21 +77,15 @@ add_executable(${EXECUTABLE} ${SOURCES})
 target_compile_definitions(${EXECUTABLE} PRIVATE
         -DUSE_HAL_DRIVER
         -DSTM32F042x6
-        -DDBGMCU_APB1_FZ_DBG_CAN_STOP
-        -DUSE_HAL_CAN_REGISTER_CALLBACKS=1
         )
-
-target_link_options(${EXECUTABLE} PRIVATE
-        -T${CMAKE_SOURCE_DIR}/STM32F042K6Tx_FLASH.ld
-        -mcpu=cortex-m0
-        -mthumb
-        -specs=nano.specs
-        -lc
-        -lm
-        -lnosys
-        -Wl,-Map=${PROJECT_NAME}.map,--cref
-        -Wl,--gc-sections
-        )
+if (${TEST} MATCHES OFF)
+    target_compile_options(common INTERFACE
+            ${compile_options}
+            )
+    target_link_options(${EXECUTABLE} PRIVATE
+            ${link_options}
+            )
+endif ()
 
 target_compile_definitions(ring_buffer PRIVATE
         -DRING_BUFFER_MAX=8
