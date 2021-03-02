@@ -1,4 +1,3 @@
-project(artronics_tests)
 set(CMAKE_CXX_STANDARD 20)
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
@@ -29,31 +28,34 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
     include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-add_executable(ring_buffer_tests src/test_ring_buffer.cpp)
-add_executable(can_tests src/test_can.cpp fixtures/CanFixture.cpp)
-add_executable(state_tests src/test_state.cpp fixtures/StateFixture.cpp)
-add_executable(message_processor_tests src/test_message_processor.cpp fixtures/MessageProcessorFixture.cpp)
-add_executable(hal_can_tests src/hal/stm32f0xx/test_hal_can.cpp)
-add_executable(hal_module_id_tests src/hal/stm32f0xx/test_module_id.cpp)
+add_executable(test_ring_buffer src/test_ring_buffer.cpp)
+add_executable(test_can src/test_can.cpp fixtures/CanFixture.cpp)
+add_executable(test_state src/test_state.cpp fixtures/StateFixture.cpp)
+add_executable(test_message_processor src/test_message_processor.cpp fixtures/MessageProcessorFixture.cpp)
+add_executable(test_hal_can src/hal/stm32f0xx/test_hal_can.cpp)
+add_executable(test_hal_module_id src/hal/stm32f0xx/test_module_id.cpp)
 
 set_property(TARGET
-        hal_can_tests
-        hal_module_id_tests
+        test_hal_can
+        test_hal_module_id
         APPEND PROPERTY COMPILE_DEFINITIONS
         USE_HAL_DRIVER
         STM32F042x6
         )
 
-target_link_libraries(ring_buffer_tests gtest_main gmock ring_buffer)
-target_link_libraries(can_tests gtest_main gmock can)
-target_link_libraries(state_tests gtest_main gmock state)
-target_link_libraries(message_processor_tests gtest_main gmock message_processor)
-target_link_libraries(hal_can_tests gtest_main gmock hal_can)
-target_link_libraries(hal_module_id_tests gtest_main gmock hal_module_id)
+set(test_targets
+        test_ring_buffer
+        test_can
+        test_state
+        test_message_processor
+        test_hal_can
+        test_hal_module_id
+        )
 
-add_test(NAME ring_buffer_tests COMMAND ring_buffer)
-add_test(NAME can_tests COMMAND can)
-add_test(NAME state_tests COMMAND state)
-add_test(NAME message_processor_tests COMMAND message_processor)
-add_test(NAME hal_can_tests COMMAND hal_can_tests)
-add_test(NAME hal_module_id_tests COMMAND hal_module_id_tests)
+foreach(target IN LISTS test_targets)
+    string(SUBSTRING ${target} 5 -1 lib_name) # remove test_ so we get the lib's name
+    target_link_libraries(${target} gtest_main gmock ${lib_name})
+    add_test(NAME ${target} COMMAND ${target})
+endforeach()
+
+add_custom_target(all_tests DEPENDS ${test_targets})
