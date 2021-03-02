@@ -1,5 +1,5 @@
 docker-build:
-	docker build -t artronics/artronics-firmware:latest -f .github/build/Dockerfile .github/build
+	docker build -t artronics/artronics-firmware:latest -f .github/docker/Dockerfile .github/docker
 
 build-firmware:
 	docker run -it --rm -v $(shell pwd):/home/build/project artronics/artronics-firmware cmake -DCMAKE_TOOLCHAIN_FILE=../arm-none-eabi-gcc.cmake --build . --target artronics.out ..
