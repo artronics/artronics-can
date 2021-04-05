@@ -7,7 +7,8 @@ extern "C" {
 #include "stdint.h"
 
 typedef enum SpiDevice {
-   SPI0,
+    ART_SPI_DEV_0,
+    ART_SPI_DEV_1,
 } SpiDevice;
 
 typedef struct HalSpiInit {
