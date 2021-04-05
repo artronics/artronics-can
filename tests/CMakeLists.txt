@@ -33,10 +33,12 @@ add_executable(test_can src/test_can.cpp fixtures/CanFixture.cpp)
 add_executable(test_state src/test_state.cpp fixtures/StateFixture.cpp)
 add_executable(test_message_processor src/test_message_processor.cpp fixtures/MessageProcessorFixture.cpp)
 add_executable(test_hal_can src/hal/stm32f0xx/test_hal_can.cpp)
+add_executable(test_hal_spi src/hal/stm32f0xx/test_hal_spi.cpp)
 add_executable(test_hal_module_id src/hal/stm32f0xx/test_module_id.cpp)
 
 set_property(TARGET
         test_hal_can
+        test_hal_spi
         test_hal_module_id
         APPEND PROPERTY COMPILE_DEFINITIONS
         USE_HAL_DRIVER
@@ -49,6 +51,7 @@ set(test_targets
         test_state
         test_message_processor
         test_hal_can
+        test_hal_spi
         test_hal_module_id
         )
 

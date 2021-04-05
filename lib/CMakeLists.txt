@@ -7,6 +7,7 @@ set(ART_SOURCES
         can.c
         hal/stm32f0xx/hal_can.c
         hal/stm32f0xx/hal_module_id.c
+        hal/stm32f0xx/hal_spi.c
         )
 
 add_library(art ${ART_SOURCES})

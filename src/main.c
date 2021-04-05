@@ -1,6 +1,7 @@
 #include "main.h"
 #include "error_handler.h"
 #include "state.h"
+#include "hal/hal_spi.h"
 
 UART_HandleTypeDef huart2;
 
@@ -30,6 +31,11 @@ int main(void) {
   HAL_GPIO_Init(GPIOB, &gpioInitTypeDef);
 
   State_init();
+  HalSpiInit init = {};
+  HalSpi_init(&init);
+  uint8_t txData[] = {1, 2, 3, 4};
+  uint8_t rxData[4] = {};
+  HalSpi_transfer(0, txData, rxData, 4);
   State_start(true);
 }
 

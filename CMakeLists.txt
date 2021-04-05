@@ -61,7 +61,6 @@ SET(SOURCES
         ${STM32F0XX_HAL_SOURCES}
         startup_stm32f042x6.s
         src/main.c
-        src/main.c
         src/error_handler.c
         src/stm32f0xx_hal_msp.c
         src/stm32f0xx_it.c

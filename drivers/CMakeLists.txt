@@ -11,6 +11,8 @@ SET(STM32F0XX_HAL_SOURCES
        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal.c
        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c.c
        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c_ex.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_spi_ex.c
        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_gpio.c
        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_dma.c
        ${CMAKE_CURRENT_SOURCE_DIR}/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_cortex.c
