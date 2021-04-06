@@ -32,11 +32,13 @@ int main(void) {
   HAL_GPIO_Init(GPIOB, &gpioInitTypeDef);
 
   State_init();
-  HalSpiInit init = {};
-  HalSpi_init(&init);
+  HalSpiInit init = {.device = ART_SPI_DEV_0, .slaves = ART_SPI_SS_1};
+  HalSpiHandler h = {};
+  HalSpi_init(&h, &init);
   uint8_t txData[] = {1, 2, 3, 4};
   uint8_t rxData[4] = {};
-  HalSpi_transfer(0, txData, rxData, 4);
+  HalSpi_transfer(&h, ART_SPI_SS_1, txData, rxData, 4);
+  HalSpi_transfer(&h, ART_SPI_SS_1, txData, rxData, 4);
   State_start(true);
 }
 
