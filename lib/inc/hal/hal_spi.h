@@ -6,12 +6,12 @@ extern "C" {
 
 #include "stdint.h"
 
-typedef enum SpiDevice {
+typedef enum HalSpiDevice {
     ART_SPI_DEV_0,
     ART_SPI_DEV_1,
-} SpiDevice;
+} HalSpiDevice;
 
-typedef enum SpiSlaveSelect {
+typedef enum HalSpiSlaveSelect {
     ART_SPI_SS_1 = 0x01,
     ART_SPI_SS_2 = 0x02,
     ART_SPI_SS_3 = 0x04,
@@ -20,22 +20,22 @@ typedef enum SpiSlaveSelect {
     ART_SPI_SS_6 = 0x20,
     ART_SPI_SS_7 = 0x40,
     ART_SPI_SS_8 = 0x80,
-} SpiSlaveSelect;
+} HalSpiSlaveSelect;
 
-typedef uint8_t SpiSlaves;
+typedef uint8_t HalSpiSlaves;
 
 typedef struct HalSpiInit {
-    SpiDevice device;
-    SpiSlaves slaves;
+    HalSpiDevice device;
+    HalSpiSlaves slaves;
 } HalSpiInit;
 
 typedef struct HalSpiHandler {
-    SpiDevice device;
+    HalSpiDevice device;
 } HalSpiHandler;
 
 int HalSpi_init(HalSpiHandler * spiHandler, const HalSpiInit * halSpiInit);
 
-void HalSpi_transfer(HalSpiHandler *handler, SpiSlaveSelect slave, uint8_t *pTxData, uint8_t *pRxData, uint16_t Size);
+void HalSpi_transfer(HalSpiHandler *handler, HalSpiSlaveSelect slave, uint8_t *pTxData, uint8_t *pRxData, uint16_t Size);
 
 #ifdef __cplusplus
 }

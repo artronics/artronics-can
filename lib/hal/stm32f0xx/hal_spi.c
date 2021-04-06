@@ -46,7 +46,7 @@ int HalSpi_init(HalSpiHandler * const spiHandler, const HalSpiInit * const halSp
   return 0;
 }
 
-void HalSpi_transfer(struct HalSpiHandler *handler, SpiSlaveSelect slave, uint8_t *pTxData, uint8_t *pRxData, uint16_t Size) {
+void HalSpi_transfer(struct HalSpiHandler *handler, HalSpiSlaveSelect slave, uint8_t *pTxData, uint8_t *pRxData, uint16_t Size) {
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
   HAL_SPI_TransmitReceive(&spi0Handler, pTxData, pRxData, Size, 1000);
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
