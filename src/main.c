@@ -1,6 +1,8 @@
 #include "main.h"
 #include "error_handler.h"
 #include "state.h"
+#include "hal/tmc/hal_tmc5160a.h"
+#include "hal/tmc/TMC5160.h"
 #include "hal/hal_spi.h"
 
 UART_HandleTypeDef huart2;
@@ -32,13 +34,15 @@ int main(void) {
   HAL_GPIO_Init(GPIOB, &gpioInitTypeDef);
 
   State_init();
-  HalSpiInit init = {.device = ART_SPI_DEV_0, .slaves = ART_SPI_SS_1};
-  HalSpiHandler h = {};
-  HalSpi_init(&h, &init);
+//  HalSpiInit init = {.device = ART_SPI_DEV_0, .slaves = ART_SPI_SS_1};
+//  HalSpiHandler h = {};
+//  HalSpi_init(&h, &init);
+  HalTmc5160Init tmc5160Init = {.spiConfig = {.spiDevice = ART_SPI_DEV_0, .spiChannel = ART_SPI_SS_1}};
+  HalTmc5160_init(&tmc5160Init);
   uint8_t txData[] = {1, 2, 3, 4};
   uint8_t rxData[4] = {};
-  HalSpi_transfer(&h, ART_SPI_SS_1, txData, rxData, 4);
-  HalSpi_transfer(&h, ART_SPI_SS_1, txData, rxData, 4);
+//  HalSpi_transfer(&h, ART_SPI_SS_1, txData, rxData, 4);
+//  HalSpi_transfer(&h, ART_SPI_SS_1, txData, rxData, 4);
   State_start(true);
 }
 

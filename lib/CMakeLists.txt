@@ -17,7 +17,7 @@ target_compile_definitions(art PRIVATE
         -DUSE_HAL_CAN_REGISTER_CALLBACKS=1
         -DRING_BUFFER_MAX=8
         )
-target_link_libraries(art PRIVATE common)
+target_link_libraries(art PRIVATE common PRIVATE hal_tmc5160)
 
 add_library(ring_buffer STATIC
         ring_buffer.c

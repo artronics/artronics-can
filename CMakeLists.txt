@@ -15,6 +15,7 @@ enable_testing()
 include_directories(
         inc
         lib/inc
+        lib/inc/hal
         drivers/CMSIS/Include
         drivers/CMSIS/Device/ST/STM32F0xx/Include
         drivers/STM32F0xx_HAL_Driver/Inc
