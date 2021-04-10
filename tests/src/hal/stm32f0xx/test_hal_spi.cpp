@@ -3,8 +3,6 @@
 #include "hal/hal_spi.h"
 #include "fff.h"
 #include "stm32f0xx_hal.h"
-#include "stm32f0xx_hal.h"
-#include "stm32f0xx_hal.h"
 #include "stm32f0xx_hal_gpio.h"
 #include "stm32f0xx_hal_spi.h"
 
